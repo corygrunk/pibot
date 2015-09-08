@@ -1,0 +1,8 @@
+{
+  "name": "pibot",
+  "version": "0.0.1",
+  "private": "true",
+  "description": "I am a robot",
+  "dependencies": {
+  }
+}
