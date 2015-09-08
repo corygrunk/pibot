@@ -4,7 +4,5 @@
   "private": "true",
   "description": "I am a robot",
   "dependencies": {
-    "http": "0.0.0",
-    "pi-pir-sensor": "0.0.3"
   }
 }
