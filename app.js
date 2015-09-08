@@ -1,9 +1,11 @@
-var SerialPort = require("serialport").SerialPort
+var SerialPort = require("serialport").SerialPort;
+var Sound = require('node-aplay');
+
 var serialPort = new SerialPort("/dev/ttyACM0", {
   baudrate: 9600
 });
 
-var incomingEvent = 0;
+new Sound('/home/pi/pibot/sounds/wakey/wakey0.wav').play();
 
 serialPort.on('open', function () {
   console.log('open');
@@ -11,6 +13,7 @@ serialPort.on('open', function () {
     console.log('data received: ' + data);
     if (data == 2) {
       console.log('Hello');
+      new Sound('/sounds/wakey/wakey0.wav').play();
     }
 
     if (data == 3) {
