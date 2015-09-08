@@ -9,6 +9,9 @@ serialPort.on('open', function () {
   console.log('open');
   serialPort.on('data', function(data) {
     console.log('data received: ' + data);
+    if (data == 2) {
+      console.log('Hello');
+    }
 
     if (data == 3) {
       console.log('Searching...');
