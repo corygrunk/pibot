@@ -4,5 +4,7 @@
   "private": "true",
   "description": "I am a robot",
   "dependencies": {
+    "node-aplay": "^1.0.3",
+    "serialport": "^1.7.4"
   }
 }
