@@ -48,8 +48,6 @@ var soundWakey = [
   "./sounds/wakey/wakey2.wav",
 ];
 
-var soundClip = new Sound(soundWakey[1]);
-
 var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
@@ -61,63 +59,48 @@ serialPort.on('open', function () {
     
     if (data == 2) {
       console.log('Hello');
-      soundClip.pause();
-      soundClip = getAudio(soundWakey);
-      soundClip.play();
+      new Sound(getAudio(getAudio(soundWakey)).play();
     }
 
     if (data == 3) {
       console.log('Searching...');
-      soundClip.pause();
-      soundClip = getAudio(soundSearching);
-      soundClip.play();
+      new Sound(getAudio(soundSearching)).play();
     }
 
     if (data == 4) {
       console.log('Stop Searching');
-      soundClip.pause();
-      soundClip = getAudio(soundStop);
-      soundClip.play();
+      new Sound(getAudio(soundStop)).play();
     }
 
     if (data == 5) {
       console.log('Found');
-      soundClip.pause();
-      soundClip = getAudio(soundFound);
-      soundClip.play();
+      new Sound(getAudio(soundFound)).play();
     }
 
     if (data == 6) {
       console.log('Lost');
-      soundClip.pause();
-      soundClip = getAudio(soundLost);
-      soundClip.play();
+      new Sound(getAudio(soundLost)).play();
     }
 
     if (data == 7) {
       console.log('Gotcha');
-      soundClip.pause();
-      soundClip = getAudio(soundGotcha);
-      soundClip.play();
+      new Sound(getAudio(soundGotcha)).play();
     }
 
     if (data == 8) {
       console.log('Wakey');
-      soundClip.pause();
-      soundClip = getAudio(soundWakey);
-      soundClip.play();
+      new Sound(getAudio(soundWakey)).play();
     }
 
     if (data == 9) {
       console.log('Sleep');
-      soundClip.pause();
-      soundClip = getAudio(soundSleep);
-      soundClip.play();
+      new Sound(getAudio(soundSleep)).play();
     }
 
     if (data == 10) {
       console.log('Toggle Radio');
       if (radioState == 1) {
+        new Sound(soundWakey[0]).play();
         child = exec("mpc play 1", function (error, stdout, stderr) {
           sys.print('stdout: ' + stdout);
           sys.print('stderr: ' + stderr);
