@@ -2,7 +2,7 @@ var SerialPort = require('serialport').SerialPort;
 var Sound = require('node-aplay');
 var pico = require('picotts');
 
-var Speakable = require('/home/pi/pibot/node_modules/speakable/.');
+var Speakable = require('./node_modules/speakable/.');
 var speakable = new Speakable({key: 'AIzaSyD4E-iVZEHV1oB37gmp-0nB5YRyFskscEQ'});
 
 
