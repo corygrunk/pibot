@@ -6,7 +6,6 @@
   "main": "app.js",
   "dependencies": {
     "node-aplay": "^1.0.3",
-    "serialport": "^1.7.4",
-    "speakable": "^0.3.0"
+    "serialport": "^1.7.4"
   }
 }
