@@ -59,7 +59,7 @@ serialPort.on('open', function () {
     
     if (data == 2) {
       console.log('Hello');
-      new Sound(getAudio(getAudio(soundWakey)).play();
+      new Sound(getAudio(soundWakey)).play();
     }
 
     if (data == 3) {
