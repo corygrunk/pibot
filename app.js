@@ -7,7 +7,6 @@ var serialPort = new SerialPort("/dev/ttyACM0", {
   baudrate: 9600
 });
 var radioState = 0;
-var soundClip = new Sound(soundWakey[1]);
 
 // SOUND FILES
 var soundFound = [
@@ -49,6 +48,7 @@ var soundWakey = [
   "./sounds/wakey/wakey2.wav",
 ];
 
+var soundClip = new Sound(soundWakey[1]);
 
 var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
