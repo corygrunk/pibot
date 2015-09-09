@@ -61,7 +61,7 @@ serialPort.on('open', function () {
       new Sound(randomAudio(4, 'sleep')).play();
     }
 
-    if (data == 1) {
+    if (data == 10) {
       console.log('Toggle Radio');
       if (radioState == 1) {
         child = exec("mpc play 1", function (error, stdout, stderr) {
@@ -72,7 +72,7 @@ serialPort.on('open', function () {
           }
         });
         radioState = 0; 
-      } else {
+      } else if (radioState == 0) {
         child = exec("mpc stop", function (error, stdout, stderr) {
           sys.print('stdout: ' + stdout);
           sys.print('stderr: ' + stderr);
