@@ -3,7 +3,7 @@ SoX(3)                          Sound eXchange                          SoX(3)
 
 
 NAME
-       libsox − SoX, an audio file‐format and effect library
+       libsox - SoX, an audio file-format and effect library
 
 SYNOPSIS
        #include <sox.h>
@@ -36,7 +36,7 @@ SYNOPSIS
 
        int sox_add_effect(sox_effects_chaint_t *chain, sox_effect_t*effp, sox_signalinfo_t *in, sox_signalinfo_t const *out);
 
-       cc file.c ‐o file ‐lsox
+       cc file.c -o file -lsox
 
 DESCRIPTION
        libsox  is  a  library  of sound sample file format readers/writers and
@@ -53,34 +53,34 @@ DESCRIPTION
 
        sox_open_input  function  opens  the file for reading whose name is the
        string pointed to by path and associates an sox_format_t  with  it.  If
-       info is non‐NULL then it will be used to specify the data format of the
+       info is non-NULL then it will be used to specify the data format of the
        input file. This is normally only needed  for  headerless  audio  files
-       since  the  information  is not stored in the file. If filetype is non‐
+       since  the  information  is not stored in the file. If filetype is non-
        NULL then it will be used to specify the file  type.  If  this  is  not
        specified  then  the file type is attempted to be derived by looking at
-       the file header and/or the filename extension. A special  name  of  "‐"
+       the file header and/or the filename extension. A special  name  of  "-"
        can be used to read data from stdin.
 
        sox_open_output  function  opens the file for writing whose name is the
        string pointed to by path and associates an sox_format_t  with  it.  If
-       info is non‐NULL then it will be used to specify the data format of the
+       info is non-NULL then it will be used to specify the data format of the
        output file. Since most file formats can write data in  different  data
        formats,  this  generally  has to be specified. The info structure from
        the input format handler can be specified to copy data over in the same
-       format.  If  comment is non‐NULL, it will be written in the file header
-       for formats that support comments. If filetype is non‐NULL then it will
+       format.  If  comment is non-NULL, it will be written in the file header
+       for formats that support comments. If filetype is non-NULL then it will
        be  used  to  specify  the file type. If this is not specified then the
        file type is attempted to be derived by looking at the filename  exten‐
-       sion. A special name of "‐" can be used to write data to stdout.
+       sion. A special name of "-" can be used to write data to stdout.
 
        The function sox_read reads len samples in to buf using the format han‐
-       dler specified by ft. All data read is converted to 32‐bit signed  sam‐
+       dler specified by ft. All data read is converted to 32-bit signed  sam‐
        ples  before  being  placed in to buf. The value of len is specified in
        total samples. If its value is not evenly divisable by  the  number  of
        channels, undefined behavior will occur.
 
        The  function  sox_write  writes  len samples from buf using the format
-       handler specified by ft. Data in buf must be 32‐bit signed samples  and
+       handler specified by ft. Data in buf must be 32-bit signed samples  and
        will  be converted during the write process. The value of len is speci‐
        fied in total samples. If its value is not evenly divisable by the num‐
        ber of channels, undefined behavior will occur.
@@ -98,9 +98,9 @@ DESCRIPTION
 
        The function sox_effect_options allows passing options into the  effect
        to  control  its  behavior.   It  will return SOX_EOF if there were any
-       invalid options  passed  in.   On  success,  the  effp‐>in_signal  will
+       invalid options  passed  in.   On  success,  the  effp->in_signal  will
        optional contain the rate and channel count it requires input data from
-       and effp‐>out_signal will optionally contain the rate and channel count
+       and effp->out_signal will optionally contain the rate and channel count
        it  outputs  in.  When present, this information should be used to make
        sure appropriate effects are placed in the effects chain to handle  any
        needed conversions.
@@ -131,7 +131,7 @@ DESCRIPTION
 
        SoX  includes  skeleton  C  files  to assist you in writing new formats
        (skelform.c) and effects (skeleff.c). Note that new formats  can  often
-       just deal with the header and then use raw.c’s routines for reading and
+       just deal with the header and then use raw.c's routines for reading and
        writing.
 
        example0.c and example1.c are a good starting point to see how to write
@@ -145,9 +145,9 @@ RETURN VALUE
        to print information.
 
        sox_read and sox_write return the number of samples  successfully  read
-       or  written.  If  an  error  occurs, or the end‐of‐file is reached, the
+       or  written.  If  an  error  occurs, or the end-of-file is reached, the
        return value is a short item count or SOX_EOF. TODO: sox_read does  not
-       distiguish  between  end‐of‐file and error. Need an feof() and ferror()
+       distiguish  between  end-of-file and error. Need an feof() and ferror()
        concept to determine which occured.
 
        Upon successful completion sox_close returns 0. Otherwise,  SOX_EOF  is
@@ -163,25 +163,21 @@ ERRORS
        TODO
 
 INTERNALS
-       SoX’s  formats  and  effects  operate with an internal sample format of
-       signed 32‐bit integer.  The data processing routines  are  called  with
+       SoX's  formats  and  effects  operate with an internal sample format of
+       signed 32-bit integer.  The data processing routines  are  called  with
        buffers of these samples, and buffer sizes which refer to the number of
        samples processed, not the number of bytes.  File readers translate the
-       input  samples  to signed 32‐bit integers and return the number of sam‐
-       ples read.  For example, data in linear signed  byte  format  is  left‐
+       input  samples  to signed 32-bit integers and return the number of sam‐
+       ples read.  For example, data in linear signed  byte  format  is  left-
        shifted 24 bits.
 
        Representing samples as integers can cause problems when processing the
        audio.  For example, if an effect to mix down left and  right  channels
        into one monophonic channel were to use the line
-
           *obuf++ = (*ibuf++ + *ibuf++)/2;
-
        distortion  might occur since the intermediate addition can overflow 32
        bits.  The line
-
           *obuf++ = *ibuf++/2 + *ibuf++/2;
-
        would get round the overflow problem (at the expense of the least  sig‐
        nificant bit).
 
@@ -199,45 +195,44 @@ FORMATS
        ple:  sampling rate, data size (8, 16, or 32 bits), encoding (unsigned,
        signed, floating point, etc.), number of sound channels.  It also  con‐
        tains  other  state  information:  whether  the sample file needs to be
-       byte‐swapped, whether sox_seek() will work, its suffix, its file stream
+       byte-swapped, whether sox_seek() will work, its suffix, its file stream
        pointer, its format pointer, and the private structure for the format .
 
-       The private area is just a preallocated data array for  the  format  to
-       use  however  it  wishes.   It should have a defined data structure and
-       cast the array to that structure.  See voc.c for the use of  a  private
+       The  private  area  is just a preallocated data array for the format to
+       use however it wishes.  It should have a  defined  data  structure  and
+       cast  the  array to that structure.  See voc.c for the use of a private
        data area.  Voc.c has to track the number of samples it writes and when
-       finishing, seek back to the beginning of the file  and  write  it  out.
-       The  private  area  is not very large.  The ‘‘echo’’ effect has to mal‐
+       finishing,  seek  back  to  the beginning of the file and write it out.
+       The private area is not very large.  The ``echo'' effect  has  to  mal‐
        loc() a much larger area for its delay line buffers.
 
        A format has 6 routines:
 
-       startread           Set up the format parameters, or  read  in  a  data
+       startread           Set  up  the  format  parameters, or read in a data
                            header, or do what needs to be done.
 
-       read                Given  a  buffer and a length: read up to that many
-                           samples, transform them into signed long  integers,
-                           and  copy  them into the buffer.  Return the number
+       read                Given a buffer and a length: read up to  that  many
+                           samples,  transform them into signed long integers,
+                           and copy them into the buffer.  Return  the  number
                            of samples actually read.
 
        stopread            Do what needs to be done.
 
-       startwrite          Set up the format parameters, or write out  a  data
+       startwrite          Set  up  the format parameters, or write out a data
                            header, or do what needs to be done.
 
        write               Given a buffer and a length: copy that many samples
-                           out of the buffer, convert them from  signed  longs
-                           to  the  appropriate  data,  and  write them to the
-                           file.  If it can’t write out all the samples, fail.
+                           out  of  the buffer, convert them from signed longs
+                           to the appropriate data,  and  write  them  to  the
+                           file.  If it can't write out all the samples, fail.
 
        stopwrite           Fix  up  any  file  header,  or do what needs to be
                            done.
 
 EFFECTS
-       Each effect runs with one input and one  output  stream.   An  effect’s
+       Each effect runs with one input and one  output  stream.   An  effect's
        implementation comprises six functions that may be called to the follow
        flow diagram:
-
        LOOP (invocations with different parameters)
          getopts
          LOOP (invocations with the same parameters)
@@ -252,9 +247,8 @@ EFFECTS
            LOOP (channels)
              stop
          kill
-
        Notes: For some effects, some of the functions may not  be  needed  and
-       can  be  NULL.   An effect that is marked ‘MCHAN’ does not use the LOOP
+       can  be  NULL.   An effect that is marked `MCHAN' does not use the LOOP
        (channels) lines and must therefore perform multiple channel processing
        inside  the  affected functions.  Multiple effect instances may be pro‐
        cessed (according to the above flow diagram) in parallel.
@@ -287,7 +281,7 @@ EFFECTS
        stop                is  called when there are no more input samples and
                            no more output samples to process.  It is typically
                            used  to release or close resources (e.g. allocated
-                           memory or temporary  files)  that  were  set‐up  in
+                           memory or temporary  files)  that  were  set-up  in
                            start.  See echo.c for an example.
 
        kill                is  called  to allow resources allocated by getopts
@@ -299,9 +293,7 @@ LINKING
        normal. For a dynamic build, you should use libtool to  link  with  the
        correct  linker  flags.  See the libtool manual for details; basically,
        you use it as:
-
-          libtool −−mode=link gcc −o prog /path/to/libsox.la
-
+          libtool --mode=link gcc -o prog /path/to/libsox.la
 
 BUGS
        This manual page is both incomplete and out of date.
@@ -312,7 +304,7 @@ SEE ALSO
        example*.c in the SoX source distribution.
 
 LICENSE
-       Copyright 1998−2011 by Chris Bagwell and SoX Contributors.
+       Copyright 1998-2011 by Chris Bagwell and SoX Contributors.
        Copyright 1991 Lance Norskog and Sundry Contributors.
 
        This library is free software; you can redistribute it and/or modify it
