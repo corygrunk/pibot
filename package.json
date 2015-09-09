@@ -5,7 +5,7 @@
   "description": "I am a robot",
   "dependencies": {
     "node-aplay": "^1.0.3",
-    "say": "^0.6.0",
-    "serialport": "^1.7.4"
+    "serialport": "^1.7.4",
+    "speakable": "^0.3.0"
   }
 }
