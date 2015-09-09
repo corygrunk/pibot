@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": "true",
   "description": "I am a robot",
+  "main": "app.js",
   "dependencies": {
     "node-aplay": "^1.0.3",
     "serialport": "^1.7.4",

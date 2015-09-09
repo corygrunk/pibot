@@ -1,7 +1,37 @@
 var SerialPort = require('serialport').SerialPort;
-//var Sound = require('node-aplay');
-//var say = require('say')
+var Sound = require('node-aplay');
 var pico = require('picotts');
+
+var Speakable = require('/home/pi/pibot/node_modules/speakable/.');
+var speakable = new Speakable({key: 'AIzaSyD4E-iVZEHV1oB37gmp-0nB5YRyFskscEQ'});
+
+
+speakable.on('speechStart', function() {
+  console.log('onSpeechStart');
+});
+
+speakable.on('speechStop', function() {
+  console.log('onSpeechStop');
+});
+
+speakable.on('speechReady', function() {
+  console.log('onSpeechReady');
+});
+
+speakable.on('error', function(err) {
+  console.log('onError:');
+  console.log(err);
+  speakable.recordVoice();
+});
+
+speakable.on('speechResult', function(recognizedWords) {
+  console.log('onSpeechResult:')
+  console.log(recognizedWords);
+  speakable.recordVoice();
+});
+
+speakable.recordVoice();
+
 
 pico.say('Hey this is cool', 'en-US', function(err) {
   if (!err)
@@ -24,53 +54,35 @@ serialPort.on('open', function () {
     console.log('data received: ' + data);
     if (data == 2) {
       console.log('Hello');
-      //say.speak(null, 'Hello');
-      //new Sound(randomAudio(1, 'wakey')).play();
     }
 
     if (data == 3) {
       console.log('Searching...');
-      //say.speak(null, 'Searching');
-      //new Sound(randomAudio(6, 'searching')).play();
     }
 
     if (data == 4) {
       console.log('Stop searching...');
-      //say.speak(null, 'Stop searching');
-      //new Sound(randomAudio(2, 'stop')).play();
     }
 
     if (data == 5) {
       console.log('Found.');
-      //say.speak(null, 'Found');
-      //new Sound(randomAudio(4, 'found')).play();
     }
 
     if (data == 6) {
       console.log('Lost.');
-      //say.speak(null, 'Lost');
-      //new Sound(randomAudio(3, 'lost')).play();
     }
 
     if (data == 7) {
       console.log('Gotcha.');
-      //say.speak(null, 'Gotcha');
-      //new Sound(randomAudio(3, 'gotcha')).play();
     }
 
     if (data == 8) {
       console.log('Wakey.');
-      //say.speak(null, 'Wakey');
-      //new Sound(randomAudio(2, 'wakey')).play();
     }
 
     if (data == 9) {
       console.log('Sleep.');
-      //say.speak(null, 'Sleep');
-      //new Sound(randomAudio(4, 'sleep')).play();
     }
-
-
   });
   serialPort.write("ls\n", function(err, results) {
     console.log('err ' + err);
