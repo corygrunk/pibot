@@ -57,8 +57,8 @@ var getAudio = function(soundArray) {
 serialPort.on('open', function () {
   console.log('open');
   serialPort.on('data', function(data) {
-    console.log('data received: ' + data);
-
+    //console.log('data received: ' + data);
+    
     if (data == 2) {
       console.log('Hello');
       soundClip.pause();
