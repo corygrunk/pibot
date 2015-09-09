@@ -2,19 +2,57 @@ var SerialPort = require('serialport').SerialPort;
 var Sound = require('node-aplay');
 var sys = require('sys')
 var exec = require('child_process').exec;
-
 var child;
-var radioState = 0;
-
 var serialPort = new SerialPort("/dev/ttyACM0", {
   baudrate: 9600
 });
+var radioState = 0;
+var soundClip = new Sound(soundWakey[1]);
 
-var randomAudio = function (num, folder) {
-  var n = Math.floor(Math.random() * (num + 1));
-  var s = '/home/pi/pibot/sounds/' + folder + '/' + folder + n.toString() + '.wav'
-  return s;
-};
+// SOUND FILES
+var soundFound = [
+  "./sounds/found/found1.wav",
+  "./sounds/found/found2.wav",
+  "./sounds/found/found3.wav",
+  "./sounds/found/found4.wav"
+];
+var soundGotcha = [
+  "./sounds/gotcha/gotcha1.wav",
+  "./sounds/gotcha/gotcha2.wav",
+  "./sounds/gotcha/gotcha3.wav",
+];
+var soundLost = [
+  "./sounds/lost/lost1.wav",
+  "./sounds/lost/lost2.wav",
+  "./sounds/lost/lost3.wav"
+];
+var soundSearching = [
+  "./sounds/searching/searching1.wav",
+  "./sounds/searching/searching2.wav",
+  "./sounds/searching/searching3.wav",
+  "./sounds/searching/searching4.wav",
+  "./sounds/searching/searching5.wav",
+  "./sounds/searching/searching6.wav"
+];
+var soundSleep = [
+  "./sounds/sleep/sleep1.wav",
+  "./sounds/sleep/sleep2.wav",
+  "./sounds/sleep/sleep3.wav",
+  "./sounds/sleep/sleep4.wav"
+];
+var soundStop = [
+  "./sounds/stop/stop1.wav",
+  "./sounds/stop/stop2.wav",
+];
+var soundWakey = [
+  "./sounds/wakey/wakey1.wav",
+  "./sounds/wakey/wakey2.wav",
+];
+
+
+var getAudio = function(soundArray) {
+   return soundArray[Math.floor(Math.random() * soundArray.length)];
+}
 
 serialPort.on('open', function () {
   console.log('open');
@@ -23,42 +61,58 @@ serialPort.on('open', function () {
 
     if (data == 2) {
       console.log('Hello');
-      new Sound(randomAudio(1, 'wakey')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundWakey);
+      soundClip.play();
     }
 
     if (data == 3) {
       console.log('Searching...');
-      new Sound(randomAudio(6, 'searching')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundSearching);
+      soundClip.play();
     }
 
     if (data == 4) {
       console.log('Stop Searching');
-      new Sound(randomAudio(2, 'stop')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundStop);
+      soundClip.play();
     }
 
     if (data == 5) {
       console.log('Found');
-      new Sound(randomAudio(4, 'found')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundFound);
+      soundClip.play();
     }
 
     if (data == 6) {
       console.log('Lost');
-      new Sound(randomAudio(3, 'lost')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundLost);
+      soundClip.play();
     }
 
     if (data == 7) {
       console.log('Gotcha');
-      new Sound(randomAudio(3, 'gotcha')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundGotcha);
+      soundClip.play();
     }
 
     if (data == 8) {
       console.log('Wakey');
-      new Sound(randomAudio(2, 'wakey')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundWakey);
+      soundClip.play();
     }
 
     if (data == 9) {
       console.log('Sleep');
-      new Sound(randomAudio(4, 'sleep')).play();
+      soundClip.pause();
+      soundClip = getAudio(soundSleep);
+      soundClip.play();
     }
 
     if (data == 10) {
