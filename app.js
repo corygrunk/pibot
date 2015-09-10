@@ -77,6 +77,8 @@ var toggleRadio = function () {
   }
 }
 
+
+
 // INIT
 console.log("Starting up...");
 ledBlue.writeSync(1); // Turn on LED
@@ -95,8 +97,14 @@ sp.on('open', function () {
     }
     console.log(senses);
 
+    var radioSubtask = 0;
     if (senses.distance < 5) {
+      radioSubtask = 1;
+    }
+
+    while (radioSubtask === 1) {
       setTimeout(toggleRadio(), 5000);
+      radioSubtask = 0;
     }
 
     //console.log(typeof data);
