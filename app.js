@@ -1,11 +1,18 @@
 var SerialPort = require('serialport').SerialPort;
 var Sound = require('node-aplay');
-var sys = require('sys')
+var sys = require('sys');
+var Gpio = require('onoff').Gpio;
 var exec = require('child_process').exec;
 var child;
 var serialPort = new SerialPort("/dev/ttyACM0", {
   baudrate: 9600
 });
+
+// GPIO PINS
+var ledRed = new Gpio(15, 'out');
+var ledGreen = new Gpio(4, 'out');
+var ledBlue = new Gpio(25, 'out');
+
 var radioState = 0;
 
 // SOUND FILES
@@ -55,71 +62,71 @@ var getAudio = function(soundArray) {
 serialPort.on('open', function () {
   console.log('open');
   serialPort.on('data', function(data) {
-    //console.log('data received: ' + data);
+    console.log('data received: ' + data);
     
-    if (data == 2) {
-      console.log('Hello');
-      new Sound(getAudio(soundWakey)).play();
-    }
+    // if (data == 2) {
+    //   console.log('Hello');
+    //   new Sound(getAudio(soundWakey)).play();
+    // }
 
-    if (data == 3) {
-      console.log('Searching...');
-      new Sound(getAudio(soundSearching)).play();
-    }
+    // if (data == 3) {
+    //   console.log('Searching...');
+    //   new Sound(getAudio(soundSearching)).play();
+    // }
 
-    if (data == 4) {
-      console.log('Stop Searching');
-      new Sound(getAudio(soundStop)).play();
-    }
+    // if (data == 4) {
+    //   console.log('Stop Searching');
+    //   new Sound(getAudio(soundStop)).play();
+    // }
 
-    if (data == 5) {
-      console.log('Found');
-      new Sound(getAudio(soundFound)).play();
-    }
+    // if (data == 5) {
+    //   console.log('Found');
+    //   new Sound(getAudio(soundFound)).play();
+    // }
 
-    if (data == 6) {
-      console.log('Lost');
-      new Sound(getAudio(soundLost)).play();
-    }
+    // if (data == 6) {
+    //   console.log('Lost');
+    //   new Sound(getAudio(soundLost)).play();
+    // }
 
-    if (data == 7) {
-      console.log('Gotcha');
-      new Sound(getAudio(soundGotcha)).play();
-    }
+    // if (data == 7) {
+    //   console.log('Gotcha');
+    //   new Sound(getAudio(soundGotcha)).play();
+    // }
 
-    if (data == 8) {
-      console.log('Wakey');
-      new Sound(getAudio(soundWakey)).play();
-    }
+    // if (data == 8) {
+    //   console.log('Wakey');
+    //   new Sound(getAudio(soundWakey)).play();
+    // }
 
-    if (data == 9) {
-      console.log('Sleep');
-      new Sound(getAudio(soundSleep)).play();
-    }
+    // if (data == 9) {
+    //   console.log('Sleep');
+    //   new Sound(getAudio(soundSleep)).play();
+    // }
 
-    if (data == 10) {
-      console.log('Toggle Radio');
-      if (radioState == 1) {
-        new Sound(soundWakey[0]).play();
-        child = exec("mpc play 1", function (error, stdout, stderr) {
-          sys.print('stdout: ' + stdout);
-          sys.print('stderr: ' + stderr);
-          if (error !== null) {
-            console.log('exec error: ' + error);
-          }
-        });
-        radioState = 0; 
-      } else if (radioState == 0) {
-        child = exec("mpc stop", function (error, stdout, stderr) {
-          sys.print('stdout: ' + stdout);
-          sys.print('stderr: ' + stderr);
-          if (error !== null) {
-            console.log('exec error: ' + error);
-          }
-        });         
-        radioState = 1;
-      }
-    }
+    // if (data == 10) {
+    //   console.log('Toggle Radio');
+    //   if (radioState == 1) {
+    //     new Sound(soundWakey[0]).play();
+    //     child = exec("mpc play 1", function (error, stdout, stderr) {
+    //       sys.print('stdout: ' + stdout);
+    //       sys.print('stderr: ' + stderr);
+    //       if (error !== null) {
+    //         console.log('exec error: ' + error);
+    //       }
+    //     });
+    //     radioState = 0; 
+    //   } else if (radioState == 0) {
+    //     child = exec("mpc stop", function (error, stdout, stderr) {
+    //       sys.print('stdout: ' + stdout);
+    //       sys.print('stderr: ' + stderr);
+    //       if (error !== null) {
+    //         console.log('exec error: ' + error);
+    //       }
+    //     });         
+    //     radioState = 1;
+    //   }
+    // }
 
 
   });

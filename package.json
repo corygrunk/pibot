@@ -5,7 +5,10 @@
   "description": "I am a robot",
   "main": "app.js",
   "dependencies": {
+    "install": "^0.1.8",
     "node-aplay": "^1.0.3",
+    "npm": "^2.14.2",
+    "onoff": "^1.0.2",
     "serialport": "^1.7.4"
   }
 }
