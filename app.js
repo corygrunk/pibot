@@ -89,13 +89,35 @@ var exit = function () {
   process.exit();
 }
 
+
+
+// ACTIONS 
+
+var actionCounter = 0;
+
+var actionRadio = function (timeout) {
+  if (actionCounter === 0) {
+    // DO ACTION
+    toggleRadio();
+    actionCounter = 1;
+    setTimeout(function(){
+      // WAIT FOR TIMEOUT
+      actionCounter = 0;
+    }, timeout);
+  } else {
+    return;
+  }
+}
+
+
+
 // INIT
 console.log("Starting up...");
 ledBlue.writeSync(1);
 ledRed.writeSync(0); 
 ledGreen.writeSync(0); 
 child = exec("mpc stop", function (error, stdout, stderr) {
-  console.log( 'Radio toggled.' );
+  console.log( 'Radio stopped.' );
   if (error !== null) {
     console.log('exec error: ' + error);
   }
@@ -111,6 +133,11 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     }
     console.log(senses);
+
+    if (senses.distance < 50) {
+      actionRadio(5000);
+    }
+    
 
     if (senses.distance < 10) {
       ledBlue.writeSync(0);
