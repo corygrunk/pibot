@@ -1,11 +1,13 @@
-var SerialPort = require('serialport').SerialPort;
+var serialport = require("serialport");
+var SerialPort = serialport.SerialPort; // localize object constructor 
 var Sound = require('node-aplay');
 var sys = require('sys');
 var Gpio = require('onoff').Gpio;
 var exec = require('child_process').exec;
 var child;
-var serialPort = new SerialPort("/dev/ttyACM0", {
-  baudrate: 9600
+var sp = new SerialPort("/dev/ttyACM0", {
+  baudrate: 57600,
+  parser: serialport.parsers.readline("\n")
 });
 
 // GPIO PINS
@@ -59,9 +61,9 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
-serialPort.on('open', function () {
+sp.on('open', function () {
   console.log('open');
-  serialPort.on('data', function(data) {
+  sp.on('data', function(data) {
     console.log('data received: ' + data);
     
     // if (data == 2) {
@@ -130,7 +132,7 @@ serialPort.on('open', function () {
 
 
   });
-  serialPort.write("ls\n", function(err, results) {
+  sp.write("ls\n", function(err, results) {
     console.log('err ' + err);
     console.log('results ' + results);
   });
