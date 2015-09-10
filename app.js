@@ -3,7 +3,7 @@ var SerialPort = serialport.SerialPort; // localize object constructor
 var Sound = require('node-aplay');
 var sys = require('sys');
 var Gpio = require('onoff').Gpio;
-var execFile = require('child_process').execFile;
+var exec = require('child_process').exec;
 var child;
 var sp = new SerialPort("/dev/ttyACM0", {
   baudrate: 19200,
@@ -64,14 +64,19 @@ var getAudio = function(soundArray) {
 
 var toggleRadio = function () {
   if (radioState === 0) {
-    execFile('mpc play', function(error, stdout, stderr) {
+    child = exec("mpc stop", function (error, stdout, stderr) {
       console.log( 'Radio toggled.' );
-      new Sound(soundWakey[0]).play(); // Play "Activated"
-    });        
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+    });  
     radioState = 1;
   } else {
-    execFile('mpc stop', function(error, stdout, stderr) {
+    child = exec("mpc play", function (error, stdout, stderr) {
       console.log( 'Radio toggled.' );
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
     });        
     radioState = 0;
   }
@@ -82,9 +87,12 @@ var toggleRadio = function () {
 // INIT
 console.log("Starting up...");
 ledBlue.writeSync(1); // Turn on LED
-execFile('mpc stop', function(error, stdout, stderr) { // Turn off radio
-  console.log( 'Radio stopped.' );
-});
+child = exec("mpc play", function (error, stdout, stderr) {
+  console.log( 'Radio toggled.' );
+  if (error !== null) {
+    console.log('exec error: ' + error);
+  }
+});  
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
