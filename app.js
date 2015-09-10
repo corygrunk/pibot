@@ -12,7 +12,7 @@ var sp = new SerialPort("/dev/ttyACM0", {
 
 // GPIO PINS
 var ledRed = new Gpio(15, 'out');
-var ledGreen = new Gpio(4, 'out');
+var ledGreen = new Gpio(24, 'out');
 var ledBlue = new Gpio(25, 'out');
 
 var senses = {};
@@ -72,7 +72,7 @@ var toggleRadio = function () {
     });  
     radioState = 1;
   } else {
-    child = exec("mpc play", function (error, stdout, stderr) {
+    child = exec("mpc play 2", function (error, stdout, stderr) {
       console.log( 'Radio toggled.' );
       if (error !== null) {
         console.log('exec error: ' + error);
@@ -82,12 +82,19 @@ var toggleRadio = function () {
   }
 }
 
-
+var exit = function () {
+  ledBlue.writeSync(0);
+  ledRed.writeSync(0);
+  ledGreen.writeSync(0);
+  process.exit();
+}
 
 // INIT
 console.log("Starting up...");
-ledBlue.writeSync(1); // Turn on LED
-child = exec("mpc play", function (error, stdout, stderr) {
+ledBlue.writeSync(1);
+ledRed.writeSync(0); 
+ledGreen.writeSync(0); 
+child = exec("mpc stop", function (error, stdout, stderr) {
   console.log( 'Radio toggled.' );
   if (error !== null) {
     console.log('exec error: ' + error);
@@ -105,14 +112,18 @@ sp.on('open', function () {
     }
     console.log(senses);
 
-    var radioSubtask = 0;
-    if (senses.distance < 5) {
-      radioSubtask = 1;
-    }
-
-    while (radioSubtask === 1) {
-      setTimeout(toggleRadio(), 5000);
-      radioSubtask = 0;
+    if (senses.distance < 10) {
+      ledBlue.writeSync(0);
+      ledRed.writeSync(0);
+      ledGreen.writeSync(1);
+    } else if (senses.distance > 10 && senses.distance < 50) {
+      ledBlue.writeSync(0);
+      ledRed.writeSync(1);
+      ledGreen.writeSync(0);
+    } else {
+      ledBlue.writeSync(1);
+      ledRed.writeSync(0);
+      ledGreen.writeSync(0);
     }
 
     //console.log(typeof data);
@@ -158,3 +169,5 @@ sp.on('open', function () {
 
   });
 });
+
+process.on('SIGINT', exit);
