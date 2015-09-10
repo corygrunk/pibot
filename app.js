@@ -96,7 +96,7 @@ sp.on('open', function () {
     console.log(senses);
 
     if (senses.distance < 5) {
-      toggleRadio();
+      setTimeout(toggleRadio(), 5000);
     }
 
     //console.log(typeof data);
