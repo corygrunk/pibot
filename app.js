@@ -66,6 +66,7 @@ var toggleRadio = function () {
   if (radioState === 0) {
     execFile('mpc play', function(error, stdout, stderr) {
       console.log( 'Radio toggled.' );
+      new Sound(soundWakey[0]).play(); // Play "Activated"
     });        
     radioState = 1;
   } else {
@@ -82,17 +83,22 @@ ledBlue.writeSync(1); // Turn on LED
 execFile('mpc stop', function(error, stdout, stderr) { // Turn off radio
   console.log( 'Radio stopped.' );
 });
-new Sound(getAudio(soundWakey)).play(); // Play activate sound
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
+  new Sound(getAudio(soundWakey)).play(); // Play activate sound
   sp.on('data', function(data) {
     //senses = JSON.parse(data);
     if (data.charAt(0) === "{") {
       senses = JSON.parse(data);
     }
     console.log(senses);
+
+    if (senses.distance < 5) {
+      toggleRadio();
+    }
+
     //console.log(typeof data);
     // if (data == 2) {
     //   console.log('Hello');
