@@ -6,7 +6,7 @@ var Gpio = require('onoff').Gpio;
 var execFile = require('child_process').execFile;
 var child;
 var sp = new SerialPort("/dev/ttyACM0", {
-  baudrate: 57600,
+  baudrate: 19200,
   parser: serialport.parsers.readline("\n")
 });
 
@@ -15,6 +15,7 @@ var ledRed = new Gpio(15, 'out');
 var ledGreen = new Gpio(4, 'out');
 var ledBlue = new Gpio(25, 'out');
 
+var senses = {};
 var radioState = 0;
 
 // SOUND FILES
@@ -76,6 +77,7 @@ var toggleRadio = function () {
 }
 
 // INIT
+console.log("Starting up...");
 ledBlue.writeSync(1); // Turn on LED
 execFile('mpc stop', function(error, stdout, stderr) { // Turn off radio
   console.log( 'Radio stopped.' );
@@ -86,8 +88,9 @@ new Sound(getAudio(soundWakey)).play(); // Play activate sound
 sp.on('open', function () {
   console.log('Serial connection started.');
   sp.on('data', function(data) {
+    //senses = JSON.parse(data);
     console.log(data);
-    console.log(typeOf data);
+    //console.log(typeof data);
     // if (data == 2) {
     //   console.log('Hello');
     //   new Sound(getAudio(soundWakey)).play();
@@ -128,9 +131,5 @@ sp.on('open', function () {
     //   new Sound(getAudio(soundSleep)).play();
     // }
 
-  });
-  sp.write("ls\n", function(err, results) {
-    console.log('err ' + err);
-    console.log('results ' + results);
   });
 });
