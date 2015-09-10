@@ -89,7 +89,10 @@ sp.on('open', function () {
   console.log('Serial connection started.');
   sp.on('data', function(data) {
     //senses = JSON.parse(data);
-    console.log(data);
+    if (data.x.charAt(0) === "{") {
+      senses = JSON.parse(data);
+    }
+    console.log(senses);
     //console.log(typeof data);
     // if (data == 2) {
     //   console.log('Hello');
