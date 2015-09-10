@@ -3,7 +3,7 @@ var SerialPort = serialport.SerialPort; // localize object constructor
 var Sound = require('node-aplay');
 var sys = require('sys');
 var Gpio = require('onoff').Gpio;
-var exec = require('child_process').exec;
+var execFile = require('child_process').execFile;
 var child;
 var sp = new SerialPort("/dev/ttyACM0", {
   baudrate: 57600,
@@ -61,11 +61,33 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
+var toggleRadio = function () {
+  if (radioState === 0) {
+    execFile('mpc play', function(error, stdout, stderr) {
+      console.log( 'Radio toggled.' );
+    });        
+    radioState = 1;
+  } else {
+    execFile('mpc stop', function(error, stdout, stderr) {
+      console.log( 'Radio toggled.' );
+    });        
+    radioState = 0;
+  }
+}
+
+// INIT
+ledBlue.writeSync(1); // Turn on LED
+execFile('mpc stop', function(error, stdout, stderr) { // Turn off radio
+  console.log( 'Radio stopped.' );
+});
+new Sound(getAudio(soundWakey)).play(); // Play activate sound
+
+// TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
-  console.log('open');
+  console.log('Serial connection started.');
   sp.on('data', function(data) {
-    console.log('data received: ' + data);
-    
+    console.log(data);
+    console.log(typeOf data);
     // if (data == 2) {
     //   console.log('Hello');
     //   new Sound(getAudio(soundWakey)).play();
@@ -105,31 +127,6 @@ sp.on('open', function () {
     //   console.log('Sleep');
     //   new Sound(getAudio(soundSleep)).play();
     // }
-
-    // if (data == 10) {
-    //   console.log('Toggle Radio');
-    //   if (radioState == 1) {
-    //     new Sound(soundWakey[0]).play();
-    //     child = exec("mpc play 1", function (error, stdout, stderr) {
-    //       sys.print('stdout: ' + stdout);
-    //       sys.print('stderr: ' + stderr);
-    //       if (error !== null) {
-    //         console.log('exec error: ' + error);
-    //       }
-    //     });
-    //     radioState = 0; 
-    //   } else if (radioState == 0) {
-    //     child = exec("mpc stop", function (error, stdout, stderr) {
-    //       sys.print('stdout: ' + stdout);
-    //       sys.print('stderr: ' + stderr);
-    //       if (error !== null) {
-    //         console.log('exec error: ' + error);
-    //       }
-    //     });         
-    //     radioState = 1;
-    //   }
-    // }
-
 
   });
   sp.write("ls\n", function(err, results) {
