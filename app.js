@@ -58,6 +58,13 @@ var soundWakey = [
   "./sounds/wakey/wakey2.wav",
 ];
 
+var exit = function () {
+  ledBlue.writeSync(0);
+  ledRed.writeSync(0);
+  ledGreen.writeSync(0);
+  process.exit();
+}
+
 var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
@@ -81,15 +88,6 @@ var toggleRadio = function () {
     radioState = 0;
   }
 }
-
-var exit = function () {
-  ledBlue.writeSync(0);
-  ledRed.writeSync(0);
-  ledGreen.writeSync(0);
-  process.exit();
-}
-
-
 
 // ACTIONS 
 
@@ -128,12 +126,11 @@ sp.on('open', function () {
   console.log('Serial connection started.');
   new Sound(getAudio(soundWakey)).play(); // Play activate sound
   sp.on('data', function(data) {
-    //senses = JSON.parse(data);
     if (data.charAt(0) === "{") {
       senses = JSON.parse(data);
     }
-    console.log(senses);
-
+    // console.log(senses);
+    
     if (senses.distance < 50) {
       actionRadio(5000);
     }
@@ -152,48 +149,6 @@ sp.on('open', function () {
       ledRed.writeSync(0);
       ledGreen.writeSync(0);
     }
-
-    //console.log(typeof data);
-    // if (data == 2) {
-    //   console.log('Hello');
-    //   new Sound(getAudio(soundWakey)).play();
-    // }
-
-    // if (data == 3) {
-    //   console.log('Searching...');
-    //   new Sound(getAudio(soundSearching)).play();
-    // }
-
-    // if (data == 4) {
-    //   console.log('Stop Searching');
-    //   new Sound(getAudio(soundStop)).play();
-    // }
-
-    // if (data == 5) {
-    //   console.log('Found');
-    //   new Sound(getAudio(soundFound)).play();
-    // }
-
-    // if (data == 6) {
-    //   console.log('Lost');
-    //   new Sound(getAudio(soundLost)).play();
-    // }
-
-    // if (data == 7) {
-    //   console.log('Gotcha');
-    //   new Sound(getAudio(soundGotcha)).play();
-    // }
-
-    // if (data == 8) {
-    //   console.log('Wakey');
-    //   new Sound(getAudio(soundWakey)).play();
-    // }
-
-    // if (data == 9) {
-    //   console.log('Sleep');
-    //   new Sound(getAudio(soundSleep)).play();
-    // }
-
   });
 });
 
