@@ -13,6 +13,9 @@ if [ -f /home/pi/autodeploy/zips/pibot-master.zip ]; then
 
     # Rename project directory to desired name
     mv pibot-master pibot
+    
+    # Shutdown pibot
+    sudo /etc/init.d/pibot stop
 
     # Delete current directory
     rm -rf /home/pi/pibot
@@ -24,7 +27,7 @@ if [ -f /home/pi/autodeploy/zips/pibot-master.zip ]; then
     npm install
 
     # Start
-    /etc/init.d/pibot start
+    sudo /etc/init.d/pibot start
 
     # Perhaps call any other scripts you need to rebuild assets here
     # or set owner/permissions
