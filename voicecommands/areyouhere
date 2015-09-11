@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mpc stop
+pico2wave -w /home/pi/pibot/voicecommands/temp.wav "Yes, I'm here."
+aplay /home/pi/pibot/voicecommands/temp.wav
+

@@ -107,11 +107,9 @@ var actionRadio = function (timeout) {
   }
 }
 
-
-
 // INIT
 console.log("Starting up...");
-ledBlue.writeSync(1);
+ledBlue.writeSync(0);
 ledRed.writeSync(0); 
 ledGreen.writeSync(0); 
 child = exec("mpc stop", function (error, stdout, stderr) {
@@ -119,7 +117,13 @@ child = exec("mpc stop", function (error, stdout, stderr) {
   if (error !== null) {
     console.log('exec error: ' + error);
   }
-});  
+});
+child = exec("sudo nohup voicecommand -c &", function (error, stdout, stderr) {
+  console.log( 'Voice Control started.' );
+  if (error !== null) {
+    console.log('exec error: ' + error);
+  }
+});
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
@@ -130,22 +134,20 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     }
     // console.log(senses);
-    
-    if (senses.distance < 50) {
-      actionRadio(5000);
-    }
-    
-
     if (senses.distance < 10) {
-      ledBlue.writeSync(0);
-      ledRed.writeSync(0);
-      ledGreen.writeSync(1);
-    } else if (senses.distance > 10 && senses.distance < 50) {
       ledBlue.writeSync(0);
       ledRed.writeSync(1);
       ledGreen.writeSync(0);
-    } else {
+    } else if (senses.distance > 10 && senses.distance < 80) {
+      ledBlue.writeSync(0);
+      ledRed.writeSync(0);
+      ledGreen.writeSync(1);
+    } else if (senses.distance > 80 && senses.distance < 200) {
       ledBlue.writeSync(1);
+      ledRed.writeSync(0);
+      ledGreen.writeSync(0);
+    } else {
+      ledBlue.writeSync(0);
       ledRed.writeSync(0);
       ledGreen.writeSync(0);
     }
