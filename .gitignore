@@ -3,6 +3,9 @@
 # Environment
 .env
 
+# Anything with a password
+autodeploy/hook.sh
+
 # Logs
 logs
 *.log
