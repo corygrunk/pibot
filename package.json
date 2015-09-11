@@ -5,6 +5,7 @@
   "description": "I am a robot",
   "main": "app.js",
   "dependencies": {
+    "gith": "^1.0.4",
     "node-aplay": "^1.0.3",
     "onoff": "^1.0.2",
     "serialport": "^1.7.4"
