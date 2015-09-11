@@ -1,3 +1,3 @@
 # piBot
 
-An oberservational, companion robot!
+An oberservational, companion robot.
