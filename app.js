@@ -16,7 +16,6 @@ var ledGreen = new Gpio(24, 'out');
 var ledBlue = new Gpio(25, 'out');
 
 var senses = {};
-var radioState = 0;
 
 // SOUND FILES
 var soundFound = [
@@ -80,38 +79,32 @@ var states = {
   "hibernate" : 0
 }
 
-
-
-
-var toggleRadio = function () {
-  if (radioState === 0) {
-    child = exec("mpc stop", function (error, stdout, stderr) {
-      console.log( 'Radio toggled.' );
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-    });  
-    radioState = 1;
-  } else {
-    child = exec("mpc play 2", function (error, stdout, stderr) {
-      console.log( 'Radio toggled.' );
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-    });        
-    radioState = 0;
-  }
-}
-
 // ACTIONS 
 
+var radioState = 0;
 var actionCounter = 0;
 var actionRadioReset = function() { actionCounter = 0 };
 var actionRadio = function (holdCount) {
   actionCounter++;
   console.log('Counter: ' + actionCounter);
   if (actionCounter === holdCount) {
-    toggleRadio();
+    if (radioState === 0) {
+      child = exec("mpc play 2", function (error, stdout, stderr) {
+        console.log( 'Radio toggled.' );
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+      });  
+      radioState = 1;
+    } else {
+      child = exec("mpc stop", function (error, stdout, stderr) {
+        console.log( 'Radio toggled.' );
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+      });        
+      radioState = 0;
+    }
   } else if (actionCounter > holdCount) {
     actionCounter = 0;
     console.log('Counter reset');
@@ -153,7 +146,7 @@ sp.on('open', function () {
       ledRed.writeSync(1);
       ledGreen.writeSync(0);
     } else if (senses.distance > 9 && senses.distance < 100) {
-      actionRadio(20);
+      actionRadio(5);
       ledBlue.writeSync(0);
       ledRed.writeSync(0);
       ledGreen.writeSync(1);
