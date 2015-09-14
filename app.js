@@ -68,6 +68,22 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
+var ledOn(color) = function () {
+  if (color === "red") {
+    ledRed.writeSync(1); ledGreen.writeSync(0); ledBlue.writeSync(0);
+  } else if (color === "green") {
+    ledRed.writeSync(0); ledGreen.writeSync(1); ledBlue.writeSync(0);
+  } else if (color === "blue") {
+    ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(1);
+  } else {
+    ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(1);
+  }
+}
+
+var lightsOut = function () {
+  ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0); 
+}
+
 var blink = function(color, howLong){
   var intervalId = setInterval(function(){
     if (color === "red") {
@@ -103,7 +119,6 @@ var blink = function(color, howLong){
     ledRed.writeSync(0);
   }, howLong);
 }
-//blink("blue", 20000);
 
 
 // STATES
@@ -113,13 +128,33 @@ var states = {
   "lost" : 0,
   "found" : 0,
   "wakeup" : 0,
-  "hibernate" : 0
+  "hibernate" : 0,
+  "radioControl": 0
+}
+if (states.sleep) {
+  // If I see something, say something
 }
 
+
+
+
+
 // ACTIONS 
+var actionCounter = 0;
+
+var detectMotion = function () {
+  actionCounter++;
+  if (actionCounter === 1) {
+    console.log("Who's there?");
+    ledOn("blue");
+  } else if (actionCounter > 1 && senses.motion === 1) {
+    console.log("Still searching");
+  } else {
+    actionCounter = 0;
+  }
+}
 
 var radioState = 0;
-var actionCounter = 0;
 var actionRadioReset = function() { actionCounter = 0 };
 var actionRadio = function (holdCount) {
   actionCounter++;
@@ -179,6 +214,9 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     }
     //console.log(senses);
+    if (senses.motion === 1) {
+      detectMotion();
+    }
     if (senses.distance < 10) {
       actionRadioReset();
     } else if (senses.distance > 9 && senses.distance < 100) {
