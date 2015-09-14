@@ -69,6 +69,19 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
+
+// STATES
+
+var states = {
+  "sleep" : 0,
+  "searching" : 0,
+  "lost" : 0,
+  "found" : 0,
+  "wakeup" : 0,
+  "hibernate" : 0
+}
+
+
 var toggleRadio = function () {
   if (radioState === 0) {
     child = exec("mpc stop", function (error, stdout, stderr) {
@@ -130,19 +143,19 @@ sp.on('open', function () {
   console.log('Serial connection started.');
   new Sound(getAudio(soundWakey)).play(); // Play activate sound
   sp.on('data', function(data) {
-    if (data.charAt(0) === "{") {
+    if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
     }
-    // console.log(senses);
+    console.log(senses);
     if (senses.distance < 10) {
       ledBlue.writeSync(0);
       ledRed.writeSync(1);
       ledGreen.writeSync(0);
-    } else if (senses.distance > 10 && senses.distance < 80) {
+    } else if (senses.distance > 9 && senses.distance < 100) {
       ledBlue.writeSync(0);
       ledRed.writeSync(0);
       ledGreen.writeSync(1);
-    } else if (senses.distance > 80 && senses.distance < 200) {
+    } else if (senses.distance > 99 && senses.distance < 200) {
       ledBlue.writeSync(1);
       ledRed.writeSync(0);
       ledGreen.writeSync(0);
