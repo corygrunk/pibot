@@ -103,7 +103,7 @@ var blink = function(color, howLong){
     ledRed.writeSync(0);
   }, howLong);
 }
-blink(blue, 20000);
+blink("blue", 20000);
 
 
 // STATES
