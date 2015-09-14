@@ -173,6 +173,7 @@ var actionRadio = function (holdCount) {
       radioState = 1;
     } else {
       child = exec("mpc stop", function (error, stdout, stderr) {
+        blink("green", 1000);
         console.log( 'Radio toggled.' );
         if (error !== null) {
           console.log('exec error: ' + error);
