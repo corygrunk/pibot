@@ -127,10 +127,9 @@ var sleep = true,
     lost = false,
     found = false,
     wake = false,
-    hibernate = false
-}
+    hibernate = false;
 
-var state = function (state) {
+var changeState = function (state) {
   if (state === "sleep") { sleep = true; search = false; lost = false; found = false; wake = false; hibernate = false; }
   else if (state === "search") { sleep = false; search = false; lost = false; found = false; wake = false; hibernate = false; }
   else if (state === "lost") { sleep = false; search = false; lost = true; found = false; wake = false; hibernate = false; }
