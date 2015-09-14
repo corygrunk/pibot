@@ -68,26 +68,42 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
-var blink = function(howLong){
- var intervalId = setInterval(function(){
-if (ledGreen.readSync() ^ 1) {
-    ledGreen.writeSync(1);
-    ledBlue.writeSync(0);
-    ledRed.writeSync(0);
-  } else {
+var blink = function(color, howLong){
+  var intervalId = setInterval(function(){
+    if (color === "red") {
+      if (ledRed.readSync() ^ 1) {
+        ledRed.writeSync(1); ledGreen.writeSync(0); ledBlue.writeSync(0);
+      } else {
+        ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0);
+      }
+    } else if (color === "green") {
+      if (ledGreen.readSync() ^ 1) {
+        ledRed.writeSync(0); ledGreen.writeSync(1); ledBlue.writeSync(0);
+      } else {
+        ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0);
+      }
+    } else if (color === "blue") {
+      if (ledBlue.readSync() ^ 1) {
+        ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(1);
+      } else {
+        ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0);
+      }
+    } else {
+      if (ledBlue.readSync() ^ 1) {
+        ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(1);
+      } else {
+        ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0);
+      }
+    }
+  }, 500);
+  setTimeout(function(){
+    clearInterval(intervalId);
     ledGreen.writeSync(0);
     ledBlue.writeSync(0);
     ledRed.writeSync(0);
-  }
- }, 500);
- setTimeout(function(){
-  clearInterval(intervalId);
-  ledGreen.writeSync(0);
-  ledBlue.writeSync(0);
-  ledRed.writeSync(0);
- }, howLong);
+  }, howLong);
 }
-blink(20000);
+blink(blue, 20000);
 
 
 // STATES
