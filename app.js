@@ -68,6 +68,17 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
+var blinkInterval;
+var blink() = function () {
+  blinkInterval = setInterval(function() {
+    if (ledGreen.readSync() ^ 1) {
+      ledGreen.writeSync(1);
+    } else {
+      ledGreen.writeSync(0);
+    }
+  }, 500);
+  
+}
 
 // STATES
 var states = {
@@ -102,12 +113,13 @@ var actionRadio = function (holdCount) {
         if (error !== null) {
           console.log('exec error: ' + error);
         }
-      });        
+      });    
       radioState = 0;
     }
-  } else if (actionCounter > holdCount) {
-    actionCounter = 0;
-    console.log('Counter reset');
+    setTimeout(function() {
+      actionCounter = 0;
+      console.log('Counter reset');
+    }, 3000);
   } else {
     return;
   }
