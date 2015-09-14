@@ -89,6 +89,28 @@ var blink = function () {
 }
 blink(blinkInterval);
 
+var blink = function(){
+ var intervalId = setInterval(function(){
+if (ledGreen.readSync() ^ 1) {
+    ledGreen.writeSync(1);
+    ledBlue.writeSync(0);
+    ledRed.writeSync(0);
+  } else {
+    ledGreen.writeSync(0);
+    ledBlue.writeSync(0);
+    ledRed.writeSync(0);
+  }
+ }, 500);
+ setTimeout(function(){
+  clearInterval(intervalId);
+  ledGreen.writeSync(0);
+  ledBlue.writeSync(0);
+  ledRed.writeSync(0);
+ }, 2000);
+}
+blink();
+
+
 // STATES
 var states = {
   "sleep" : 0,
