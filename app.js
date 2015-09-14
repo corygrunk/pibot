@@ -71,7 +71,6 @@ var getAudio = function(soundArray) {
 
 
 // STATES
-
 var states = {
   "sleep" : 0,
   "searching" : 0,
@@ -80,6 +79,8 @@ var states = {
   "wakeup" : 0,
   "hibernate" : 0
 }
+
+
 
 
 var toggleRadio = function () {
@@ -106,15 +107,14 @@ var toggleRadio = function () {
 
 var actionCounter = 0;
 
-var actionRadio = function (timeout) {
-  if (actionCounter === 0) {
-    // DO ACTION
+var actionRadio = function (holdCount) {
+  actionCounter++;
+  console.log('Counter: ' actionCounter);
+  if (actionCounter === holdCount) {
     toggleRadio();
-    actionCounter = 1;
-    setTimeout(function(){
-      // WAIT FOR TIMEOUT
-      actionCounter = 0;
-    }, timeout);
+  } else if (actionCounter > holdCount) {
+    actionCounter = 0;
+    console.log('Counter reset');
   } else {
     return;
   }
@@ -152,6 +152,7 @@ sp.on('open', function () {
       ledRed.writeSync(1);
       ledGreen.writeSync(0);
     } else if (senses.distance > 9 && senses.distance < 100) {
+      actionRadio(20);
       ledBlue.writeSync(0);
       ledRed.writeSync(0);
       ledGreen.writeSync(1);
