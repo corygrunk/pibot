@@ -68,7 +68,7 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
-var ledOn(color) = function () {
+var ledOn = function (color) {
   if (color === "red") {
     ledRed.writeSync(1); ledGreen.writeSync(0); ledBlue.writeSync(0);
   } else if (color === "green") {
@@ -141,7 +141,9 @@ if (states.sleep) {
 
 // ACTIONS 
 var actionCounter = 0;
+var actionCounterReset = function() { actionCounter = 0 };
 
+var detectMotionReset = function () { };
 var detectMotion = function () {
   actionCounter++;
   if (actionCounter === 1) {
@@ -149,13 +151,10 @@ var detectMotion = function () {
     ledOn("blue");
   } else if (actionCounter > 1 && senses.motion === 1) {
     console.log("Still searching");
-  } else {
-    actionCounter = 0;
   }
 }
 
 var radioState = 0;
-var actionRadioReset = function() { actionCounter = 0 };
 var actionRadio = function (holdCount) {
   actionCounter++;
   console.log('Counter: ' + actionCounter);
@@ -216,15 +215,17 @@ sp.on('open', function () {
     //console.log(senses);
     if (senses.motion === 1) {
       detectMotion();
+    } else {
+      actionCounterReset();
     }
     if (senses.distance < 10) {
-      actionRadioReset();
+      actionCounterReset();
     } else if (senses.distance > 9 && senses.distance < 100) {
       actionRadio(5);
     } else if (senses.distance > 99 && senses.distance < 200) {
-      actionRadioReset();
+      actionCounterReset();
     } else {
-      actionRadioReset();
+      actionCounterReset();
     }
   });
 });
