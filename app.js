@@ -148,7 +148,6 @@ var actionExample = function (holdCount) {  // holdCount = How long to do this a
   if (actionCounter === 1) {                // Inital action upon entering state
     console.log("Entered example state");
   } else if (actionCounter === holdCount) { // Action once holdCount is met
-    if (radioState === 0) {
     setTimeout(function() {                 // Wait 3 seconds and reset state
       actionCounter = 0;
       console.log('Counter reset');
@@ -197,12 +196,6 @@ ledRed.writeSync(0);
 ledGreen.writeSync(0); 
 child = exec("mpc stop", function (error, stdout, stderr) {
   console.log( 'Radio stopped.' );
-  if (error !== null) {
-    console.log('exec error: ' + error);
-  }
-});
-child = exec("sudo nohup voicecommand -c &", function (error, stdout, stderr) {
-  console.log( 'Voice Control started.' );
   if (error !== null) {
     console.log('exec error: ' + error);
   }
