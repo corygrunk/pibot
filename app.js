@@ -68,28 +68,7 @@ var getAudio = function(soundArray) {
    return soundArray[Math.floor(Math.random() * soundArray.length)];
 }
 
-var blinkInterval;
-var blinkInterval = function () {
-  return setInterval(function() {
-    if (ledGreen.readSync() ^ 1) {
-      ledGreen.writeSync(1);
-      ledBlue.writeSync(0);
-      ledRed.writeSync(0);
-    } else {
-      ledGreen.writeSync(0);
-      ledBlue.writeSync(0);
-      ledRed.writeSync(0);
-    }
-  }, 500);
-}
-var blink = function () {
-  setTimeout(function) {
-    clearInterval(blinkInterval);
-  }, 2000);
-}
-blink(blinkInterval);
-
-var blink = function(){
+var blink = function(howLong){
  var intervalId = setInterval(function(){
 if (ledGreen.readSync() ^ 1) {
     ledGreen.writeSync(1);
@@ -106,9 +85,9 @@ if (ledGreen.readSync() ^ 1) {
   ledGreen.writeSync(0);
   ledBlue.writeSync(0);
   ledRed.writeSync(0);
- }, 2000);
+ }, howLong);
 }
-blink();
+blink(20000);
 
 
 // STATES
