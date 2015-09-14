@@ -106,10 +106,10 @@ var toggleRadio = function () {
 // ACTIONS 
 
 var actionCounter = 0;
-
+var actionRadioReset = function() { actionCounter = 0 };
 var actionRadio = function (holdCount) {
   actionCounter++;
-  console.log('Counter: ' actionCounter);
+  console.log('Counter: ' + actionCounter);
   if (actionCounter === holdCount) {
     toggleRadio();
   } else if (actionCounter > holdCount) {
@@ -146,8 +146,9 @@ sp.on('open', function () {
     if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
     }
-    console.log(senses);
+    //console.log(senses);
     if (senses.distance < 10) {
+      actionRadioReset();
       ledBlue.writeSync(0);
       ledRed.writeSync(1);
       ledGreen.writeSync(0);
@@ -157,10 +158,12 @@ sp.on('open', function () {
       ledRed.writeSync(0);
       ledGreen.writeSync(1);
     } else if (senses.distance > 99 && senses.distance < 200) {
+      actionRadioReset();
       ledBlue.writeSync(1);
       ledRed.writeSync(0);
       ledGreen.writeSync(0);
     } else {
+      actionRadioReset();
       ledBlue.writeSync(0);
       ledRed.writeSync(0);
       ledGreen.writeSync(0);
