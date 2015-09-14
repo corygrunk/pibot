@@ -122,35 +122,40 @@ var blink = function(color, howLong){
 
 
 // STATES
-var states = {
-  "sleep" : 0,
-  "searching" : 0,
-  "lost" : 0,
-  "found" : 0,
-  "wakeup" : 0,
-  "hibernate" : 0,
-  "radioControl": 0
-}
-if (states.sleep) {
-  // If I see something, say something
+var sleep = true,
+    search = false,
+    lost = false,
+    found = false,
+    wake = false,
+    hibernate = false
 }
 
-
-
-
+var state = function (state) {
+  if (state === "sleep") { sleep = true; search = false; lost = false; found = false; wake = false; hibernate = false; }
+  else if (state === "search") { sleep = false; search = false; lost = false; found = false; wake = false; hibernate = false; }
+  else if (state === "lost") { sleep = false; search = false; lost = true; found = false; wake = false; hibernate = false; }
+  else if (state === "found") { sleep = false; search = false; lost = false; found = true; wake = false; hibernate = false; }
+  else if (state === "wake") { sleep = false; search = false; lost = false; found = false; wake = true; hibernate = false; }
+  else if (state === "hibernate") { sleep = false; search = false; lost = false; found = false; wake = false; hibernate = true; }
+}
 
 // ACTIONS 
 var actionCounter = 0;
 var actionCounterReset = function() { actionCounter = 0 };
 
-var detectMotionReset = function () { };
-var detectMotion = function () {
+var actionExample = function (holdCount) {  // holdCount = How long to do this action?
   actionCounter++;
-  if (actionCounter === 1) {
-    console.log("Who's there?");
-    ledOn("blue");
-  } else if (actionCounter > 1 && senses.motion === 1) {
-    console.log("Still searching");
+  console.log('Counter: ' + actionCounter);
+  if (actionCounter === 1) {                // Inital action upon entering state
+    console.log("Entered example state");
+  } else if (actionCounter === holdCount) { // Action once holdCount is met
+    if (radioState === 0) {
+    setTimeout(function() {                 // Wait 3 seconds and reset state
+      actionCounter = 0;
+      console.log('Counter reset');
+    }, 3000);
+  } else {
+    return;
   }
 }
 
@@ -213,17 +218,15 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     }
     //console.log(senses);
-    if (senses.motion === 1) {
-      detectMotion();
-    } else {
-      actionCounterReset();
-    }
     if (senses.distance < 10) {
       actionCounterReset();
+      ledOn("red");
     } else if (senses.distance > 9 && senses.distance < 100) {
+      ledOn("green");
       actionRadio(5);
     } else if (senses.distance > 99 && senses.distance < 200) {
       actionCounterReset();
+      ledOn("blue");
     } else {
       actionCounterReset();
     }
