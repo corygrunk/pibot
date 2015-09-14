@@ -95,7 +95,7 @@ var blink = function(color, howLong){
         ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0);
       }
     }
-  }, 500);
+  }, 250);
   setTimeout(function(){
     clearInterval(intervalId);
     ledGreen.writeSync(0);
@@ -103,7 +103,7 @@ var blink = function(color, howLong){
     ledRed.writeSync(0);
   }, howLong);
 }
-blink("blue", 20000);
+//blink("blue", 20000);
 
 
 // STATES
@@ -127,6 +127,7 @@ var actionRadio = function (holdCount) {
   if (actionCounter === holdCount) {
     if (radioState === 0) {
       child = exec("mpc play 2", function (error, stdout, stderr) {
+        blink("green", 1000);
         console.log( 'Radio toggled.' );
         if (error !== null) {
           console.log('exec error: ' + error);
