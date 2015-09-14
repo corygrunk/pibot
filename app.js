@@ -69,16 +69,25 @@ var getAudio = function(soundArray) {
 }
 
 var blinkInterval;
-var blink() = function () {
-  blinkInterval = setInterval(function() {
+var blinkInterval = function () {
+  return setInterval(function() {
     if (ledGreen.readSync() ^ 1) {
       ledGreen.writeSync(1);
+      ledBlue.writeSync(0);
+      ledRed.writeSync(0);
     } else {
       ledGreen.writeSync(0);
+      ledBlue.writeSync(0);
+      ledRed.writeSync(0);
     }
   }, 500);
-  
 }
+var blink = function () {
+  setTimeout(function) {
+    clearInterval(blinkInterval);
+  }, 2000);
+}
+blink(blinkInterval);
 
 // STATES
 var states = {
@@ -154,24 +163,12 @@ sp.on('open', function () {
     //console.log(senses);
     if (senses.distance < 10) {
       actionRadioReset();
-      ledBlue.writeSync(0);
-      ledRed.writeSync(1);
-      ledGreen.writeSync(0);
     } else if (senses.distance > 9 && senses.distance < 100) {
       actionRadio(5);
-      ledBlue.writeSync(0);
-      ledRed.writeSync(0);
-      ledGreen.writeSync(1);
     } else if (senses.distance > 99 && senses.distance < 200) {
       actionRadioReset();
-      ledBlue.writeSync(1);
-      ledRed.writeSync(0);
-      ledGreen.writeSync(0);
     } else {
       actionRadioReset();
-      ledBlue.writeSync(0);
-      ledRed.writeSync(0);
-      ledGreen.writeSync(0);
     }
   });
 });
