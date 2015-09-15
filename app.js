@@ -120,6 +120,12 @@ var actionRadio = function (holdCount) {
   console.log('Counter: ' + actionCounter);
   if (actionCounter === holdCount) {
     if (radioState === 0) {
+      child = exec("service shairport stop", function (error, stdout, stderr) {
+        console.log( 'Stopping Shairport.' );
+        if (error !== null) {
+        console.log('exec error: ' + error);
+       }
+      });
       child = exec("mpc play 2", function (error, stdout, stderr) {
         voice("Radio activated.");
         blink("green", 1000);
@@ -135,7 +141,13 @@ var actionRadio = function (holdCount) {
         if (error !== null) {
           console.log('exec error: ' + error);
         }
-      });    
+      });
+      child = exec("service shairport start", function (error, stdout, stderr) {
+        console.log( 'Starting Shairport.' );
+        if (error !== null) {
+        console.log('exec error: ' + error);
+       }
+      }); 
       radioState = 0;
     }
     setTimeout(function() {
@@ -187,6 +199,12 @@ ledRed.writeSync(0);
 ledGreen.writeSync(0); 
 child = exec("mpc stop", function (error, stdout, stderr) {
   console.log( 'Radio stopped.' );
+  if (error !== null) {
+    console.log('exec error: ' + error);
+  }
+});
+child = exec("sudo nohup ../airplay-audio-project/shairport/shairport -a piBot &", function (error, stdout, stderr) {
+  console.log( 'Shairport started.' );
   if (error !== null) {
     console.log('exec error: ' + error);
   }
