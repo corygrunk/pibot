@@ -88,6 +88,7 @@ var changeState = function (state) {
   else if (state === "hibernate") { sleep = false; search = false; lost = false; found = false; wake = false; hibernate = true; }
 }
 
+
 // ACTIONS 
 var actionCounter = 0;
 var actionCounterReset = function() { actionCounter = 0 };
@@ -107,6 +108,12 @@ var actionExample = function (holdCount) {  // holdCount = How long to do this a
   }
 }
 
+var voice = function(sayWhat) {
+  pico.say(sayWhat, 'en-US', function(err) {
+    if (!err) { console.log(sayWhat) }
+  });
+}
+
 var radioState = 0;
 var actionRadio = function (holdCount) {
   actionCounter++;
@@ -114,8 +121,8 @@ var actionRadio = function (holdCount) {
   if (actionCounter === holdCount) {
     if (radioState === 0) {
       child = exec("mpc play 2", function (error, stdout, stderr) {
+        voice("Radio activated.");
         blink("green", 1000);
-        console.log( 'Radio toggled.' );
         if (error !== null) {
           console.log('exec error: ' + error);
         }
@@ -123,8 +130,8 @@ var actionRadio = function (holdCount) {
       radioState = 1;
     } else {
       child = exec("mpc stop", function (error, stdout, stderr) {
+        voice("Radio stopped.");        
         blink("green", 1000);
-        console.log( 'Radio toggled.' );
         if (error !== null) {
           console.log('exec error: ' + error);
         }
@@ -139,6 +146,39 @@ var actionRadio = function (holdCount) {
     return;
   }
 }
+
+
+// MODES
+var presenseTimer;
+var presenseMode = function () {
+  console.log('Presense mode activated.');
+  console.log('Motion: ' + senses.motion);
+  
+  presenseTimer = setInterval(function() {
+    console.log('Timer running: ' + senses.motion);
+  }, 1000);
+  setTimeout(function () {
+    console.log('This: ' + senses.motion);
+    if (senses.motion === 0) {
+      console.log('Timeout: ' + senses.motion);
+      clearInterval(presenseTimer);
+    } else {
+      console.log('Restart timer: ' + senses.motion);
+      clearInterval(presenseTimer);
+      
+    }
+  }, 10000);
+}
+
+//var presenseCounter = 0;
+//setInterval(function () {
+//  presenseCounter++;
+//  if (senses.motion === 1) {
+//    presenseMode();
+//  }
+//}, 1000);
+
+
 
 // INIT
 console.log("Starting up...");
@@ -155,14 +195,13 @@ child = exec("mpc stop", function (error, stdout, stderr) {
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
-  pico.say('Starting up.', 'en-US', function(err) {
-    if (!err) { console.log('Staring up.') }
-  });  
+  voice("Hello, my name is Audi.");
   sp.on('data', function(data) {
     if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
     }
     //console.log(senses);
+    
     if (senses.distance < 10) {
       actionCounterReset();
       ledOn("red");
