@@ -8,6 +8,7 @@
     "gith": "^1.0.4",
     "node-aplay": "^1.0.3",
     "onoff": "^1.0.2",
+    "picotts": "^0.1.1",
     "serialport": "^1.7.4"
   }
 }
