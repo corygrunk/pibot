@@ -115,6 +115,8 @@ var voice = function(sayWhat) {
 }
 
 var radioState = 0;
+var radioStation = 1;
+var playCommand = "mpc play " + radioStation;
 var actionRadio = function (holdCount) {
   actionCounter++;
   console.log('Counter: ' + actionCounter);
@@ -126,7 +128,7 @@ var actionRadio = function (holdCount) {
         console.log('exec error: ' + error);
        }
       });
-      child = exec("mpc play 2", function (error, stdout, stderr) {
+      child = exec(playCommand, function (error, stdout, stderr) {
         voice("Radio activated.");
         blink("green", 1000);
         if (error !== null) {
@@ -149,6 +151,50 @@ var actionRadio = function (holdCount) {
        }
       }); 
       radioState = 0;
+    }
+    setTimeout(function() {
+      actionCounter = 0;
+      console.log('Counter reset');
+    }, 3000);
+  } else {
+    return;
+  }
+}
+
+var actionRadioStation = function (holdCount) {
+  actionCounter++;
+  console.log('Counter: ' + actionCounter);
+  if (actionCounter === holdCount) {
+    if (radioStation === 1 && radioState === 1) {
+      child = exec("service shairport stop", function (error, stdout, stderr) {
+        console.log( 'Stopping Shairport' );
+        if (error !== null) {
+        console.log('exec error: ' + error);
+       }
+      });
+      child = exec("mpc play 2", function (error, stdout, stderr) {
+        voice("Playing Open Air.");
+        blink("red", 1000);
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+      });
+      radioStation = 2;
+    } else if (radioStation === 2 && radioState === 1) {
+      child = exec("service shairport stop", function (error, stdout, stderr) {
+        console.log('Stopping Shairport');
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+      });
+      child = exec("mpc play 1", function (error, stdout, stderr) {
+        voice("Playing En Pee Are");
+        blink("red", 1000);
+        if (error !== null) {
+        console.log('exec error: ' + error);
+       }
+      });
+      radioStation = 1;
     }
     setTimeout(function() {
       actionCounter = 0;
@@ -209,23 +255,32 @@ child = exec("sudo nohup ../airplay-audio-project/shairport/shairport -a piBot &
     console.log('exec error: ' + error);
   }
 });
+child = exec("sudo voicecommand -c", function (error, stdout, stderr) {
+  console.log( 'Voicecommand started.' );
+  if (error !== null) {
+    console.log('exec error: ' + error);
+  }
+});
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
-  voice("Hello, my name is Audi.");
+  voice("Hello.");
   sp.on('data', function(data) {
     if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
     }
     //console.log(senses);
     
-    if (senses.distance < 10) {
-      actionCounterReset();
+    if (senses.distance < 5) {
+      actionRadio(5);
+      ledOn("red");
+    } else if (senses.distance > 4 && senses.distance < 10) {
+      actionRadioStation(5);
       ledOn("red");
     } else if (senses.distance > 9 && senses.distance < 100) {
+      actionCounterReset();
       ledOn("green");
-      actionRadio(5);
     } else if (senses.distance > 99 && senses.distance < 200) {
       actionCounterReset();
       ledOn("blue");
