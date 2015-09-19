@@ -3,7 +3,7 @@ var pico = require('picotts');
 var moment = require('moment');
 
 pico.say("Ok, just a second.", 'en-US', function(err) {
-  if (!err) { console.log(Ok, just a second.);  }
+  if (!err) { console.log("Ok, just a second.");  }
 });
 
 request('https://api.nasa.gov/planetary/earth/assets?lon=-104.93&lat=39.75&begin=2014-02-01&api_key=W5RJVKHOevJF1oQdGRFPNljEckv1n8YOqJoLaEXe', function (error, response, body) {
