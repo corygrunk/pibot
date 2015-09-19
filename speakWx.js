@@ -7,7 +7,7 @@ request('http://api.openweathermap.org/data/2.5/weather?zip=80207,us', function 
     var say = "It is currently " + wx.weather[0].main + ", and " + wx.weather[0].description;
     pico.say(say, 'en-US', function(err) {
       if (!err) { 
-        console.log(say);) 
+        console.log(say);
       }
     });
   }

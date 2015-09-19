@@ -6,6 +6,7 @@
   "main": "app.js",
   "dependencies": {
     "gith": "^1.0.4",
+    "moment": "^2.10.6",
     "node-aplay": "^1.0.3",
     "onoff": "^1.0.2",
     "picotts": "^0.1.1",
