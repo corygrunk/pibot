@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pico2wave -w /home/pi/pibot/voicecommands/temp.wav "I will check the weather."
+aplay /home/pi/pibot/voicecommands/temp.wav
+node /home/pi/pibot/speakWx.js

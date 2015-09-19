@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mpc play 2
+pico2wave -w /home/pi/pibot/voicecommands/temp.wav "Playing Open Air"
+aplay /home/pi/pibot/voicecommands/temp.wav
+
