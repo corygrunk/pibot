@@ -2,4 +2,4 @@
 
 pico2wave -w /home/pi/pibot/voicecommands/temp.wav "Checking weather."
 aplay /home/pi/pibot/voicecommands/temp.wav
-node /home/pi/pibot/speakWx.js
+node /home/pi/pibot/weather.js
