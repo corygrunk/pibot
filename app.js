@@ -272,13 +272,13 @@ sp.on('open', function () {
     }
     //console.log(senses);
     
-    if (senses.distance < 5) {
+    if (senses.distance < 10) {
       actionRadio(5);
       ledOn("red");
-    } else if (senses.distance > 4 && senses.distance < 10) {
+    } else if (senses.distance > 9 && senses.distance < 20) {
       actionRadioStation(5);
       ledOn("red");
-    } else if (senses.distance > 9 && senses.distance < 100) {
+    } else if (senses.distance > 19 && senses.distance < 100) {
       actionCounterReset();
       ledOn("green");
     } else if (senses.distance > 99 && senses.distance < 200) {
