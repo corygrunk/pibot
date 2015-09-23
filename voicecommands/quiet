@@ -1,6 +1,0 @@
-#!/bin/bash
-
-mpc stop
-pico2wave -w /home/pi/pibot/voicecommands/temp.wav "Quiet time."
-aplay /home/pi/pibot/voicecommands/temp.wav
-

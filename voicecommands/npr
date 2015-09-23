@@ -1,6 +1,0 @@
-#!/bin/bash
-
-mpc play 1
-pico2wave -w /home/pi/pibot/voicecommands/temp.wav "Playing En Pee Are"
-aplay /home/pi/pibot/voicecommands/temp.wav
-

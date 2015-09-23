@@ -1,5 +1,0 @@
-FATAL: avahi client failure
-shairport: thread-watch.c:149: avahi_threaded_poll_stop: Assertion `!pthread_equal(pthread_self(), p->thread_id)' failed.
-Starting Shairport 1.1.1-23-gd65b8e8
-Listening for connections.
-Shutting down...

@@ -47,3 +47,4 @@ component.json
 bower_components
 
 newrelic_agent.log
+nohup.out
