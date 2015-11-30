@@ -8,6 +8,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var Gpio = require('onoff').Gpio;
+var leds = require('./lib/leds.js').Gpio;
 
 // GPIO PINS
 var ledRed = new Gpio(15, 'out');
@@ -16,22 +17,6 @@ var ledBlue = new Gpio(25, 'out');
 
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
-
-// LED FUNCTIONS
-var ledOn = function (color) {
-  if (color === "red") {
-    ledRed.writeSync(1); ledGreen.writeSync(0); ledBlue.writeSync(0);
-  } else if (color === "green") {
-    ledRed.writeSync(0); ledGreen.writeSync(1); ledBlue.writeSync(0);
-  } else if (color === "blue") {
-    ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(1);
-  } else {
-    ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(1);
-  }
-}
-var lightsOut = function () {
-  ledRed.writeSync(0); ledGreen.writeSync(0); ledBlue.writeSync(0); 
-}
 
 // INIT
 console.log("Starting up...");
@@ -48,9 +33,9 @@ sp.on('open', function () {
     };
     console.log(senses);
     if (senses.distance < 20) {
-    	ledOn("blue");
+      leds.on(1,1,0);
     } else {
-    	lightsOut();
+      leds.off;
     };
   });
 });
