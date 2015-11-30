@@ -1,3 +1,20 @@
+{
+  "name": "pibot",
+  "version": "0.0.1",
+  "private": "true",
+  "description": "I am a robot",
+  "main": "app.js",
+  "dependencies": {
+    "moment": "^2.10.6",
+    "node-aplay": "^1.0.3",
+    "onoff": "^1.0.2",
+    "request": "^2.62.0",
+    "serialport": "^1.7.4"
+  }
+}
+
+
+
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort; // localize object constructor 
 var Sound = require('node-aplay');
