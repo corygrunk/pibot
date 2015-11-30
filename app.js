@@ -5,9 +5,9 @@ var sp = new SerialPort("/dev/ttyUSB0", {
   parser: serialport.parsers.readline("\n")
 });
 var sys = require('sys');
+var Gpio = require('onoff').Gpio;
 var exec = require('child_process').exec;
 var child;
-var Gpio = require('onoff').Gpio;
 
 // GPIO PINS
 var ledRed = new Gpio(15, 'out');
