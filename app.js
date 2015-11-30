@@ -1,6 +1,6 @@
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort; // localize object constructor
-var sp = new SerialPort("/dev/ttyACM0", {
+var sp = new SerialPort("/dev/ttyUSB0", {
   baudrate: 19200,
   parser: serialport.parsers.readline("\n")
 });
