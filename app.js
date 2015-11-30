@@ -14,7 +14,7 @@ var senses = {};
 
 // INIT
 console.log("Starting up...");
-leds();
+leds.on(1,0,0);
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
