@@ -5,6 +5,7 @@
   "description": "I am a robot",
   "main": "app.js",
   "dependencies": {
+    "onoff": "^1.0.3",
     "serialport": "^2.0.5"
   }
 }
