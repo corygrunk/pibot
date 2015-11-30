@@ -7,7 +7,7 @@ var sp = new SerialPort("/dev/ttyUSB0", {
 var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
-var leds = require('./lib/leds.js');
+var leds = require('./lib/leds');
 
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
