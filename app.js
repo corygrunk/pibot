@@ -7,15 +7,15 @@ var sp = new SerialPort("/dev/ttyUSB0", {
 var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
-var Led = require('./lib/leds.js').Gpio;
-var leds = new Led();
+var Leds = require('./lib/leds.js').Gpio;
+var led = new Leds();
 
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
 
 // INIT
 console.log("Starting up...");
-leds.on(1,0,0);
+led.on(1,0,0);
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
