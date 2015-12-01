@@ -14,7 +14,7 @@ var senses = {};
 
 // INIT
 console.log("Starting up...");
-leds.off;
+leds.off();
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
@@ -27,14 +27,14 @@ sp.on('open', function () {
     if (senses.distance < 20) {
       leds.on(0,0,1);
     } else {
-      leds.off;
+      leds.off();
     };
   });
 });
 
 // EXIT
 var exit = function () {
-  leds.off;
+  leds.off();
   process.exit();
 }
 process.on('SIGINT', exit);
