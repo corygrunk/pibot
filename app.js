@@ -28,9 +28,23 @@ sp.on('open', function () {
 });
 
 // STATES
-var waiting = false;
-while (waiting === false) {
-  console.log('Waiting...');
+var waiting = true;
+var searching = false;
+while (waiting === true) {
+  if (senses.motion === 1) {
+    searching = true;
+    waiting = false;
+  }
+}
+while (searching === true) {
+  setTimeout(function () {
+    if (senses.distance < 50) {
+      console.log('I see you.');
+      break;
+    } else {
+      console.log('Searching...');
+    }
+  }, 500);
 }
 
 // var waiting = function () {
