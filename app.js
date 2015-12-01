@@ -28,24 +28,16 @@ sp.on('open', function () {
 });
 
 // STATES
-var waiting = setInterval(function() {
-  if (senses.motion === 1) {
-    console.log('Presence detected.');
-  } else {
-    console.log('Waiting...');    
-  }
-}, 1000);
-var presence = setInterval(function() {
-}, 1000);
-var locking = setInterval(function() {
-}, 1000);
-var locked = setInterval(function() {
-}, 1000);
-// START UP
-clearInterval(waiting);
-clearInterval(presence);
-clearInterval(locking);
-clearInterval(locked);
+var waiting = function () {
+  var interval = setInterval(function() {
+    if (senses.motion === 1) {
+      console.log('Presence detected.');
+    } else {
+      console.log('Waiting...');    
+    }
+  }, 1000);
+}
+
 waiting();
 
 
