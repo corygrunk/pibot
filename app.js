@@ -16,6 +16,16 @@ var senses = {};
 console.log("Starting up...");
 leds.off();
 
+
+// Move to modules
+var actions = function () {
+  if (senses.distance < 20) {
+    leds.on(0,0,1);
+  } else {
+    leds.off();
+  };
+}
+
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
@@ -24,11 +34,7 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     };
     console.log(senses);
-    if (senses.distance < 20) {
-      leds.on(0,0,1);
-    } else {
-      leds.off();
-    };
+    actions();
   });
 });
 
