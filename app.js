@@ -8,6 +8,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var leds = require('./lib/leds');
+var states = require('./lib/states');
 
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
@@ -18,13 +19,7 @@ leds.off();
 
 
 // Move to modules
-var actions = function () {
-  if (senses.distance < 20) {
-    leds.on(0,0,1);
-  } else {
-    leds.off();
-  };
-}
+
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
@@ -34,7 +29,7 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     };
     console.log(senses);
-    actions();
+    states();
   });
 });
 
