@@ -16,16 +16,6 @@ var senses = {};
 console.log("Starting up...");
 leds.off();
 
-
-// Move to modules
-var actions = function () {
-  if (senses.distance < 20) {
-    leds.on(0,0,1);
-  } else {
-    leds.off();
-  };
-}
-
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
@@ -34,9 +24,29 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     };
     console.log(senses);
-    actions();
   });
 });
+
+// STATES
+var waiting = setInterval(function() {
+  if (senses.motion === 1) {
+    console.log('Presence detected.');
+  } else {
+    console.log('Waiting...');    
+  }
+}, 1000);
+var presence = setInterval(function() {
+  console.log('Presence');
+}, 1000);
+var locking = setInterval(function() {
+  console.log('Locking');
+}, 1000);
+var locked = setInterval(function() {
+  console.log('Locked');
+}, 1000);
+// START UP
+waiting();
+
 
 // EXIT
 var exit = function () {
