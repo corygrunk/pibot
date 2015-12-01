@@ -36,15 +36,16 @@ var waiting = setInterval(function() {
   }
 }, 1000);
 var presence = setInterval(function() {
-  console.log('Presence');
 }, 1000);
 var locking = setInterval(function() {
-  console.log('Locking');
 }, 1000);
 var locked = setInterval(function() {
-  console.log('Locked');
 }, 1000);
 // START UP
+clearInterval(waiting);
+clearInterval(presence);
+clearInterval(locking);
+clearInterval(locked);
 waiting();
 
 
