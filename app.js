@@ -28,17 +28,34 @@ sp.on('open', function () {
 });
 
 // STATES
-var waiting = function () {
-  var interval = setInterval(function() {
-    if (senses.motion === 1) {
-      console.log('Presence detected.');
-    } else {
-      console.log('Waiting...');    
-    }
-  }, 1000);
+var waiting = false;
+while (waiting === false) {
+  console.log('Waiting...');
 }
 
-waiting();
+// var waiting = function () {
+//   var interval = setInterval(function() {
+//     if (senses.motion === 1) {
+//       console.log('Presence detected.');
+//     } else {
+//       console.log('Waiting...');    
+//     }
+//   }, 1000);
+// }
+
+// var searchCount = 0;
+// var searching = function () {
+//   var interval = setInterval(function() {
+//     if (senses.motion === 1) {
+//       console.log('Presence detected.');
+//     } else {
+//       console.log('Waiting...');    
+//     };
+//     searchCount = searchCount++;
+//   }, 500);
+// }
+
+// waiting();
 
 
 // EXIT
