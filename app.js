@@ -32,6 +32,9 @@ var waiting = 0;
 var searching = 0;
 
 var states = function () {
+  if (senses.motion === 1) {
+    waiting = 1;
+  }
   if (waiting === 1) {
     console.log('Is someone there? ' + waiting);
     watiing = 2;
