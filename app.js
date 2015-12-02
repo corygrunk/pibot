@@ -24,6 +24,7 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     };
     states();
+    console.log(senses);
   });
 });
 
@@ -38,13 +39,13 @@ var states = function () {
     console.log(senses.motion + ' //////////////////////////////// Is someone there? ' + waiting);
     waiting = 2;
   }
-  if (waiting >= 2 && waiting <= 9) {
+  if (waiting >= 2 && waiting <= 10) {
     setTimeout(function () {
       console.log(senses.motion + ' Is someone there... ' + waiting);
       waiting = waiting + 1;
     }, 1000);
   }
-  if (waiting === 10) {
+  if (waiting > 10) {
     waiting = 0;
   }
 }
