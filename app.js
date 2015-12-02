@@ -33,11 +33,10 @@ var searching = 0;
 var states = function () {
   if (senses.motion === 1 && waiting === 0) {
     waiting = 1;
-    console.log(senses.motion + ' Is someone there? ' + waiting);
   }
   if (waiting === 1) {
+    console.log(senses.motion + '//////////////////////////////// Is someone there? ' + waiting);
     waiting = 2;
-    console.log(senses.motion + ' Is someone there... ' + waiting);
   }
   if (waiting > 1 && waiting > 10) {
     setTimeout(function () {
