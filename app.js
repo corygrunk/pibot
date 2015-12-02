@@ -23,7 +23,6 @@ sp.on('open', function () {
     if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
     };
-    console.log(senses);
     states();
   });
 });
@@ -36,12 +35,12 @@ var states = function () {
     waiting = 1;
   }
   if (waiting === 1) {
-    console.log('Is someone there? ' + waiting);
+    console.log(senses + ' Is someone there? ' + waiting);
     watiing = 2;
   }
-  if (waiting > 10) {
+  if (waiting > 1 && waiting > 10) {
     setTimeout(function () {
-      console.log('Is someone there... ' + waiting);
+      console.log(senses + ' Is someone there... ' + waiting);
     }, 1000);
   }
   // if (searching === 1) {
