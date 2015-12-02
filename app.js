@@ -24,52 +24,31 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     };
     console.log(senses);
+    states();
   });
 });
 
-// STATES
-var waiting = true;
-var searching = false;
-while (waiting === true) {
-  if (senses.motion === 1) {
-    searching = true;
-    waiting = false;
+var waiting = 0;
+var searching = 0;
+
+var states = function () {
+  if (waiting === 1) {
+    console.log('Is someone there? ' + waiting);
+    watiing = 2;
   }
+  if (waiting > 10) {
+    setTimeout(function () {
+      console.log('Is someone there... ' + waiting);
+    }, 1000);
+  }
+  // if (searching === 1) {
+  //   console.log('I see you.');
+  //   searching = 2;
+  // }
+  // if (searching > 1) {
+  //   console.log('Still see you...');
+  // }
 }
-while (searching === true) {
-  setTimeout(function () {
-    if (senses.distance < 50) {
-      console.log('I see you.');
-      break;
-    } else {
-      console.log('Searching...');
-    }
-  }, 500);
-}
-
-// var waiting = function () {
-//   var interval = setInterval(function() {
-//     if (senses.motion === 1) {
-//       console.log('Presence detected.');
-//     } else {
-//       console.log('Waiting...');    
-//     }
-//   }, 1000);
-// }
-
-// var searchCount = 0;
-// var searching = function () {
-//   var interval = setInterval(function() {
-//     if (senses.motion === 1) {
-//       console.log('Presence detected.');
-//     } else {
-//       console.log('Waiting...');    
-//     };
-//     searchCount = searchCount++;
-//   }, 500);
-// }
-
-// waiting();
 
 
 // EXIT
