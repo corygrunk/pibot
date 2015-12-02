@@ -39,14 +39,16 @@ var states = function () {
     waiting = 1;
   }
   if (waiting === 1) {
-    console.log(senses.motion + ' //////////////////////////////// Is someone there? ' + waiting);
-    waiting = 2;
+    setTimeout(function () {
+      console.log(senses.motion + ' //////////////////////////////// Is someone there? ' + waiting);
+      waiting = 2;
+    }, 1000);
   }
   if (waiting >= 2 && waiting <= 10) {
     setTimeout(function () {
       console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting);
       waiting = waiting + 1;
-    }, 1000);
+    }, 2000);
   }
   if (waiting > 10) {
     setTimeout(function () {
