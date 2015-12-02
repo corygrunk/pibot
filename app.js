@@ -31,6 +31,10 @@ var waiting = 0;
 var searching = 0;
 
 var states = function () {
+  if (senses.motion === 0 && waiting === 0) {
+    console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
+    waiting = 0;
+  }
   if (senses.motion === 1 && waiting === 0) {
     waiting = 1;
   }
@@ -45,11 +49,9 @@ var states = function () {
     }, 1000);
   }
   if (waiting > 10) {
-    waiting = 0;
-  }
-  if (senses.motion === 0 && waiting === 0) {
-    console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
-    waiting = 0;
+    setTimeout(function () {
+      waiting = 0;
+    }, 1000);
   }
 }
 
