@@ -35,10 +35,10 @@ var states = function () {
     waiting = 1;
   }
   if (waiting === 1) {
-    console.log(senses.motion + '//////////////////////////////// Is someone there? ' + waiting);
+    console.log(senses.motion + ' //////////////////////////////// Is someone there? ' + waiting);
     waiting = 2;
   }
-  if (waiting > 1 && waiting > 10) {
+  if (waiting >= 2 && waiting <= 9) {
     setTimeout(function () {
       console.log(senses.motion + ' Is someone there... ' + waiting);
       waiting = waiting + 1;
@@ -47,13 +47,6 @@ var states = function () {
   if (waiting === 10) {
     waiting = 0;
   }
-  // if (searching === 1) {
-  //   console.log('I see you.');
-  //   searching = 2;
-  // }
-  // if (searching > 1) {
-  //   console.log('Still see you...');
-  // }
 }
 
 
