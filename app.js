@@ -24,7 +24,6 @@ sp.on('open', function () {
       senses = JSON.parse(data);
     };
     states();
-    console.log(senses);
   });
 });
 
@@ -41,12 +40,15 @@ var states = function () {
   }
   if (waiting >= 2 && waiting <= 10) {
     setTimeout(function () {
-      console.log(senses.motion + ' Is someone there... ' + waiting);
+      console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting);
       waiting = waiting + 1;
     }, 1000);
   }
   if (waiting > 10) {
     waiting = 0;
+  }
+  if (senses.motion === 0 && waiting = 0) {
+    console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
   }
 }
 
