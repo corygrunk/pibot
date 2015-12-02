@@ -47,8 +47,9 @@ var states = function () {
   if (waiting > 10) {
     waiting = 0;
   }
-  if (senses.motion === 0 && waiting = 0) {
+  if (senses.motion === 0 && waiting === 0) {
     console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
+    waiting = 0;
   }
 }
 
