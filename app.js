@@ -31,30 +31,26 @@ var waiting = 0;
 var searching = 0;
 
 var states = function () {
-  if (senses.motion === 0 && waiting === 0) {
-    console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
-    waiting = 0;
-  }
-  if (senses.motion === 1 && waiting === 0) {
-    waiting = 1;
-  }
-  if (waiting === 1) {
-    setTimeout(function () {
+  setTimeout(function () {
+    if (senses.motion === 0 && waiting === 0) {
+      console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
+      waiting = 0;
+    }
+    if (senses.motion === 1 && waiting === 0) {
+      waiting = 1;
+    }
+    if (waiting === 1) {
       console.log(senses.motion + ' //////////////////////////////// Is someone there? ' + waiting);
       waiting = 2;
-    }, 1000);
-  }
-  if (waiting >= 2 && waiting <= 10) {
-    setTimeout(function () {
+    }
+    if (waiting >= 2 && waiting <= 10) {
       console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting);
       waiting = waiting + 1;
-    }, 2000);
-  }
-  if (waiting > 10) {
-    setTimeout(function () {
+    }
+    if (waiting > 10) {
       waiting = 0;
-    }, 1000);
-  }
+    }
+  }, 1000);
 }
 
 
