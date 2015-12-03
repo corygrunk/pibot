@@ -56,7 +56,6 @@ var states = function () {
   }, 1000);
 }
 
-
 // EXIT
 var exit = function () {
   leds.off();
