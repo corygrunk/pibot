@@ -48,6 +48,7 @@ var radioToggle = function () {
 // INIT
 console.log("Starting up...");
 leds.off();
+radioStop();
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
@@ -107,7 +108,7 @@ var statesInterval = function () {
   if (locked === 5) {
     console.log('LOCKED!');
     leds.on(0,1,0);
-    radioStart();
+    radioToggle();
     reset();
     clearInterval(statesInterval);
     setTimeout(function () {
