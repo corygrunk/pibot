@@ -30,7 +30,6 @@ sp.on('open', function () {
 var waiting = 0;
 var searching = 0;
 var locked = 0;
-var logState = ' /  waiting: ' + waiting + ' / searching: ' + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.motion;
 
 var reset = function () {
   waiting = 0;
@@ -41,9 +40,10 @@ var reset = function () {
 
 var states = function () {
   setTimeout(function () {
+    var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
     // ALL IS QUIET
     if (senses.motion === 0 && waiting === 0 && locked === 0) {
-      console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
+      console.log('//////////////////////////////// Zzzzzzzz.... ' + logState);
       waiting = 0;
     }
     // MOTION DETECTED
@@ -65,11 +65,11 @@ var states = function () {
         waiting = waiting + 1;
       }
     }
-    if (senses.motion === 1 && waiting > 10 && locked <= 5) {
+    if (senses.motion === 1 && waiting > 10) {
       waiting = 2;
     }
-    if (senses.motion === 0 && waiting > 10 && locked <= 5) {
-      waiting = 0;
+    if (senses.motion === 0 && waiting > 10) {
+      reset();
     }
     if (locked === 5) {
       console.log('LOCKED!');
@@ -79,6 +79,8 @@ var states = function () {
     }
   }, 3000);
 }
+
+//////////////////////////////// Searching... ///  waiting: 10 / searching: 0 / locked: 4 / motion: 0 / distance: 141
 
 // EXIT
 var exit = function () {
