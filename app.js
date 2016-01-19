@@ -38,49 +38,51 @@ var reset = function () {
   console.log('Reset');
 }
 
-var states = function () {
-  setTimeout(function () {
-    var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
-    // ALL IS QUIET
-    if (senses.motion === 0 && waiting === 0 && locked === 0) {
-      console.log('//////////////////////////////// Zzzzzzzz.... ' + logState);
-      waiting = 0;
-    }
-    // MOTION DETECTED
-    if (senses.motion === 1 && waiting === 0 && locked === 0) {
-      console.log('//////////////////////////////// Is someone there?' + logState);
-      waiting = 1;
-    }
-    if (waiting === 1) {
+var statesInterval = {
+  var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
+  // ALL IS QUIET
+  if (senses.motion === 0 && waiting === 0 && locked === 0) {
+    console.log('Zzzzzzzz....     ' + logState);
+    waiting = 0;
+  }
+  // MOTION DETECTED
+  if (senses.motion === 1 && waiting === 0 && locked === 0) {
+    console.log('Is someone there?' + logState);
+    waiting = 1;
+  }
+  if (waiting === 1) {
+    waiting = 2;
+  }
+  // SEARCHING...
+  if (waiting >= 2 && waiting <= 10) {
+    if (senses.distance > 10 && senses.distance < 30) {
+      console.log('Locking ...      ' + logState);
+      locked = locked + 1;
       waiting = 2;
+    } else {
+      console.log('Searching...     ' + logState);
+      waiting = waiting + 1;
     }
-    // SEARCHING...
-    if (waiting >= 2 && waiting <= 10) {
-      if (senses.distance > 10 && senses.distance < 30) {
-        console.log('//////////////////////////////// Locking ...' + logState);
-        locked = locked + 1;
-        waiting = 2;
-      } else {
-        console.log('//////////////////////////////// Searching...' + logState);
-        waiting = waiting + 1;
-      }
-    }
-    if (senses.motion === 1 && waiting > 10) {
-      waiting = 2;
-    }
-    if (senses.motion === 0 && waiting > 10) {
-      reset();
-    }
-    if (locked === 5) {
-      console.log('LOCKED!');
-      setTimeout(function () {
-        reset();
-      }, 10000);
-    }
-  }, 3000);
+  }
+  if (senses.motion === 1 && waiting > 10) {
+    waiting = 2;
+  }
+  if (senses.motion === 0 && waiting > 10) {
+    reset();
+  }
+  if (locked === 5) {
+    console.log('LOCKED!');
+    reset();
+    clearInterval(statesInterval);
+    setTimeout(function () {
+      states();
+    }, 10000);
+  }
 }
 
-//////////////////////////////// Searching... ///  waiting: 10 / searching: 0 / locked: 4 / motion: 0 / distance: 141
+var states = function () {
+  setTimeout(statesInterval, 3000);
+}
 
 // EXIT
 var exit = function () {
