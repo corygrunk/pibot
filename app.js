@@ -15,7 +15,7 @@ var senses = {};
 var waiting = 0;
 var searching = 0;
 var locked = 0;
-var radioState = false;
+var radioState = 0;
 
 var radioStart = function () {
   exec('mpc play 1', function(error, stdout, stderr) {
@@ -34,10 +34,12 @@ var radioStop = function () {
 }
 
 var radioToggle = function () {
-  if (radioState === true) {
+  if (radioState === 1) {
     radioStop();
+    radioState = 0;
   } else {
     radioStart();
+    radioState = 1;
   }
 }
 
@@ -63,6 +65,7 @@ var reset = function () {
   waiting = 0;
   searching = 0;
   locked = 0;
+  leds.off();
   console.log('Reset');
 }
 
@@ -77,6 +80,7 @@ var statesInterval = function () {
   // MOTION DETECTED
   if (senses.motion === 1 && waiting === 0 && locked === 0) {
     console.log('Is someone there?' + logState);
+    leds.on(1,0,0);
     waiting = 1;
   }
   if (waiting === 1) {
@@ -90,8 +94,8 @@ var statesInterval = function () {
       locked = locked + 1;
       waiting = 2;
     } else {
-      leds.on(1,0,0);
       console.log('Searching...     ' + logState);
+      leds.off();
       waiting = waiting + 1;
     }
   }
@@ -105,6 +109,16 @@ var statesInterval = function () {
     console.log('LOCKED!          ' + logState);
     leds.on(0,1,0);
     radioToggle();
+    locked = locked + 1;
+  }
+  if (locked > 5) {
+    leds.on(0,1,0);
+    console.log('LOCKED!          ' + logState);
+    locked = locked + 1;
+  }
+  if (locked === 30) {
+    console.log('LOCKED!          ' + logState);
+    reset();
   }
 }
 
