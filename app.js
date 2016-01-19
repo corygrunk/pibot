@@ -12,24 +12,10 @@ var leds = require('./lib/leds');
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
 
-// INIT
-console.log("Starting up...");
-leds.off();
-
-// TURN ON ARDUINO SERIAL COMMUNITCATION
-sp.on('open', function () {
-  console.log('Serial connection started.');
-  sp.on('data', function(data) {
-    if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
-      senses = JSON.parse(data);
-    };
-    states();
-  });
-});
-
 var waiting = 0;
 var searching = 0;
 var locked = 0;
+var radioState = false;
 
 var radioStart = function () {
   exec('mpc play 1', function(error, stdout, stderr) {
@@ -50,6 +36,31 @@ var radioStop = function () {
     }
   });
 }
+
+var radioToggle = function () {
+  if (radioState === true) {
+    radioStop();
+  } else {
+    radioStart();
+  }
+}
+
+// INIT
+console.log("Starting up...");
+leds.off();
+
+// TURN ON ARDUINO SERIAL COMMUNITCATION
+sp.on('open', function () {
+  console.log('Serial connection started.');
+  sp.on('data', function(data) {
+    if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
+      senses = JSON.parse(data);
+    };
+    states();
+  });
+});
+
+
 
 var reset = function () {
   waiting = 0;
