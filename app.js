@@ -31,6 +31,26 @@ var waiting = 0;
 var searching = 0;
 var locked = 0;
 
+var radioStart = function () {
+  exec('mpc play 1', function(error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+        console.log('exec error: ' + error);
+    }
+  });
+}
+
+var radioStop = function () {
+  exec('mpc stop', function(error, stdout, stderr) {
+    console.log('stdout: ' + stdout);
+    console.log('stderr: ' + stderr);
+    if (error !== null) {
+        console.log('exec error: ' + error);
+    }
+  });
+}
+
 var reset = function () {
   waiting = 0;
   searching = 0;
@@ -56,10 +76,12 @@ var statesInterval = function () {
   // SEARCHING...
   if (waiting >= 2 && waiting <= 10) {
     if (senses.distance > 10 && senses.distance < 30) {
+      leds.on(0,0,1);
       console.log('Locking ...      ' + logState);
       locked = locked + 1;
       waiting = 2;
     } else {
+      leds.on(1,0,0);
       console.log('Searching...     ' + logState);
       waiting = waiting + 1;
     }
@@ -72,11 +94,12 @@ var statesInterval = function () {
   }
   if (locked === 5) {
     console.log('LOCKED!');
-    function puts(error, stdout, stderr) { sys.puts(stdout) }
-    exec("mpc play 1", puts);
+    leds.on(0,1,0);
+    radioStart();
     reset();
     clearInterval(statesInterval);
     setTimeout(function () {
+      leds.off();
       states();
     }, 10000);
   }
