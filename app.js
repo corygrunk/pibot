@@ -48,10 +48,10 @@ var states = function () {
     }
     // SEARCHING...
     if (waiting >= 2 && waiting <= 10) {
-      console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting + ' / distance: ' + motion.distance);
+      console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting + ' / distance: ' + senses.distance);
       waiting = waiting + 1;
       if (senses.distance > 20 && senses.distance < 100) {
-        console.log('Locking ... locked: ' + locked + ' / distance: ' + motion.distance);
+        console.log('Locking ... locked: ' + locked + ' / distance: ' + senses.distance);
         locked = locked + 1;
       }
     }
