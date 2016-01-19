@@ -29,31 +29,43 @@ sp.on('open', function () {
 
 var waiting = 0;
 var searching = 0;
+var locked = 0;
 
 var states = function () {
   setTimeout(function () {
-    if (senses.motion === 0 && waiting === 0) {
+    // ALL IS QUIET
+    if (senses.motion === 0 && waiting === 0 && locked === 0) {
       console.log(senses.motion + ' Zzzzzzzz.... ' + waiting);
       waiting = 0;
     }
-    if (senses.motion === 1 && waiting === 0) {
+    // MOTION DETECTED
+    if (senses.motion === 1 && waiting === 0 && locked === 0) {
       console.log(senses.motion + ' //////////////////////////////// Is someone there? ' + waiting);
       waiting = 1;
     }
     if (waiting === 1) {
       waiting = 2;
     }
+    // SEARCHING...
     if (waiting >= 2 && waiting <= 10) {
-      console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting);
+      console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting + ' / distance: ' + motion.distance);
       waiting = waiting + 1;
+      if (senses.distance > 20 && senses.distance < 100) {
+        console.log('Locking ... locked: ' + locked + ' / distance: ' + motion.distance);
+        locked = locked + 1;
+      }
     }
-    if (senses.motion === 1 && waiting > 10) {
+    if (senses.motion === 1 && waiting > 10 && locked === 0) {
       waiting = 2;
     }
-    if (senses.motion === 0 && waiting > 10) {
+    if (senses.motion === 0 && waiting > 10 && locked === 0) {
       waiting = 0;
     }
-  }, 1000);
+    if (locked === 5) {
+      waiting = 0;
+      console.log('LOCKED!');
+    }
+  }, 3000);
 }
 
 // EXIT
