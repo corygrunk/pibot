@@ -63,6 +63,7 @@ var statesInterval = function () {
   // ALL IS QUIET
   if (senses.motion === 0 && waiting === 0 && locked === 0) {
     console.log('Zzzzzzzz....     ' + logState);
+    leds.off();
     waiting = 0;
   }
   // MOTION DETECTED
