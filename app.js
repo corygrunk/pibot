@@ -38,7 +38,7 @@ var reset = function () {
   console.log('Reset');
 }
 
-var statesInterval = {
+var statesInterval = function () {
   var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // ALL IS QUIET
   if (senses.motion === 0 && waiting === 0 && locked === 0) {
@@ -72,6 +72,8 @@ var statesInterval = {
   }
   if (locked === 5) {
     console.log('LOCKED!');
+    function puts(error, stdout, stderr) { sys.puts(stdout) }
+    exec("mpc play 1", puts);
     reset();
     clearInterval(statesInterval);
     setTimeout(function () {
