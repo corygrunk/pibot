@@ -31,6 +31,13 @@ var waiting = 0;
 var searching = 0;
 var locked = 0;
 
+var reset = function () {
+  waiting = 0;
+  searching = 0;
+  locked = 0;
+  console.log('Reset');
+}
+
 var states = function () {
   setTimeout(function () {
     // ALL IS QUIET
@@ -63,8 +70,10 @@ var states = function () {
       waiting = 0;
     }
     if (locked === 5) {
-      waiting = 0;
       console.log('LOCKED!');
+      setTimeout(function () {
+        reset();
+      }, 10000);
     }
   }, 3000);
 }
