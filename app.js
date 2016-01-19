@@ -48,17 +48,18 @@ var states = function () {
     }
     // SEARCHING...
     if (waiting >= 2 && waiting <= 10) {
-      console.log(senses.motion + ' //////////////////////////////// Looking... ' + waiting + ' / distance: ' + senses.distance);
+      console.log(senses.motion + ' //////////////////////////////// Searching... ' + waiting + ' / distance: ' + senses.distance);
       waiting = waiting + 1;
-      if (senses.distance > 20 && senses.distance < 100) {
-        console.log('Locking ... locked: ' + locked + ' / distance: ' + senses.distance);
+      if (senses.distance > 10 && senses.distance < 30) {
+        console.log(senses.motion + ' //////////////////////////////// Locking ... locked: ' + locked + ' / distance: ' + senses.distance);
         locked = locked + 1;
+        waiting = 2;
       }
     }
-    if (senses.motion === 1 && waiting > 10 && locked === 0) {
+    if (senses.motion === 1 && waiting > 10) {
       waiting = 2;
     }
-    if (senses.motion === 0 && waiting > 10 && locked === 0) {
+    if (senses.motion === 0 && waiting > 10) {
       waiting = 0;
     }
     if (locked === 5) {
