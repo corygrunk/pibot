@@ -13,23 +13,6 @@ var wit = require('node-wit');
 var fs = require('fs');
 var ACCESS_TOKEN = "7XE5FW2NHTFIHAL2IAD6LMRRD5NQB43S";
 
-
-console.log("Sending text & audio to Wit.AI");
- 
-wit.captureTextIntent(ACCESS_TOKEN, "Hello world", function (err, res) {
-    console.log("Response from Wit for text input: ");
-    if (err) console.log("Error: ", err);
-    console.log(JSON.stringify(res, null, " "));
-});
- 
-var stream = fs.createReadStream('sample.wav');
-wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
-    console.log("Response from Wit for audio stream: ");
-    if (err) console.log("Error: ", err);
-    console.log(JSON.stringify(res, null, " "));
-});
-
-
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
 
@@ -39,6 +22,51 @@ var locked = 0;
 var shutdown = 0;
 var radioState = 0;
 var serialState = 0;
+
+
+var getIntent = function () {
+  console.log("Sending audio to Wit...");
+  var stream = fs.createReadStream('sample.wav');
+  wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
+    if (err) console.log("Error: ", err);
+    if (res) {
+      var intent = res.outcomes[0].intent;
+      var confidence = res.outcomes[0].confidence;
+      console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
+      if (intent === "Radio" && confidence > .5) {
+        radioToggle();    
+      } else {
+        console.log('I\'m not sure what you said.');
+      }
+    }
+  });
+}
+
+var recordAudio = function () {
+  new Sound('sounds/wakey/wakey2.wav').play();
+  radioVolume(40);
+  setTimeout(function () {
+    console.log('Start recording...');
+    exec('arecord -D plughw:1 --duration=3 -f cd sample.wav', function(error, stdout, stderr) {
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+    });
+  }, 300);
+  setTimeout(function () {
+    console.log('Recording complete.');
+    radioVolume(90);
+    getIntent();
+  }, 3700);
+}
+
+var radioVolume = function (volume) {
+  exec('mpc volume ' + volume, function(error, stdout, stderr) {
+    if (error !== null) {
+        console.log('exec error: ' + error);
+    }
+  });
+}
 
 var radioStart = function () {
   exec('mpc play 1', function(error, stdout, stderr) {
@@ -156,7 +184,8 @@ var statesInterval = function () {
   if (locked === 5) {
     console.log('LOCKED!          ' + logState);
     leds.on(0,1,0);
-    radioToggle();
+    recordAudio();
+    //radioToggle();
     locked = locked + 1;
   }
   if (locked > 5) {
