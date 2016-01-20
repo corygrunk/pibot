@@ -17,6 +17,7 @@ var senses = {};
 var waiting = 0;
 var searching = 0;
 var locked = 0;
+var shutdown = 0;
 var radioState = 0;
 
 var radioStart = function () {
@@ -70,6 +71,7 @@ var reset = function () {
   waiting = 0;
   searching = 0;
   locked = 0;
+  shutdown = 0;
   leds.off();
   //console.log('Reset');
 }
@@ -93,10 +95,14 @@ var statesInterval = function () {
   }
   // SEARCHING...
   if (waiting >= 2 && waiting <= 10 && locked <= 5) {
-    if (senses.distance > 10 && senses.distance < 30) {
+    if (senses.distance > 10 && senses.distance < 30) { // SENSE A LOCK COMMAND
       leds.on(0,0,1);
       //console.log('Locking ...      ' + logState);
       locked = locked + 1;
+      waiting = 2;
+    } else if (senses.distance < 5) { // SENSE A SHUTDOWN COMMAND
+      leds.on(1,0,0);
+      shutdown = shutdown + 1;
       waiting = 2;
     } else {
       //console.log('Searching...     ' + logState);
@@ -122,6 +128,9 @@ var statesInterval = function () {
   if (locked === 30) {
     console.log('LOCKED!          ' + logState);
     reset();
+  }
+  if (shutdown > 0) {
+    console.log(shutdown);
   }
 }
 
