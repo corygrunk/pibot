@@ -23,11 +23,11 @@ var shutdown = 0;
 var radioState = 0;
 var serialState = 0;
 
-
 var getIntent = function () {
   console.log("Sending audio to Wit...");
   var stream = fs.createReadStream('sample.wav');
   wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
+    console.log('Waiting for WIT');
     if (err) console.log("Error: ", err);
     if (res) {
       var intent = res.outcomes[0].intent;
@@ -35,11 +35,9 @@ var getIntent = function () {
       console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
       if (intent === "Radio" && confidence > .5) {
         radioToggle();
-      }    
-      if (intent === "OpenAir" && confidence > .5) {
+      } else if (intent === "OpenAir" && confidence > .5) {
         radioStation(2);
-      }
-      if (intent === "NPR" && confidence > .5) {
+      } else if (intent === "NPR" && confidence > .5) {
         radioStation(1);
       } else {
         console.log('I\'m not sure what you said.');
@@ -49,8 +47,8 @@ var getIntent = function () {
 }
 
 var recordAudio = function () {
-  new Sound('sounds/wakey/wakey2.wav').play();
-  radioVolume(50);
+  new Sound('sounds/boop.wav').play();
+  if (radioState === 1) { radioVolume(50); }
   setTimeout(function () {
     console.log('Start recording...');
     exec('arecord -D plughw:1 --duration=3 -f cd sample.wav', function(error, stdout, stderr) {
@@ -61,7 +59,7 @@ var recordAudio = function () {
   }, 300);
   setTimeout(function () {
     console.log('Recording complete.');
-    radioVolume(90);
+    if (radioState === 1) { radioVolume(90); }
     getIntent();
   }, 3700);
 }
@@ -111,7 +109,8 @@ var radioToggle = function () {
 
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
-    new Sound('sounds/wakey/wakey1.wav').play();
+    // new Sound('sounds/wakey/wakey1.wav').play();
+    console.log('Activated');
     serialState = 1
   }
 }
