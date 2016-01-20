@@ -66,20 +66,20 @@ var reset = function () {
   searching = 0;
   locked = 0;
   leds.off();
-  console.log('Reset');
+  //console.log('Reset');
 }
 
 var statesInterval = function () {
   var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // ALL IS QUIET
   if (senses.motion === 0 && waiting === 0 && locked === 0) {
-    console.log('Zzzzzzzz....     ' + logState);
+    //console.log('Zzzzzzzz....     ' + logState);
     leds.off();
     waiting = 0;
   }
   // MOTION DETECTED
   if (senses.motion === 1 && waiting === 0 && locked === 0) {
-    console.log('Is someone there?' + logState);
+    //console.log('Is someone there?' + logState);
     leds.on(1,0,0);
     waiting = 1;
   }
@@ -90,11 +90,11 @@ var statesInterval = function () {
   if (waiting >= 2 && waiting <= 10 && locked <= 5) {
     if (senses.distance > 10 && senses.distance < 30) {
       leds.on(0,0,1);
-      console.log('Locking ...      ' + logState);
+      //console.log('Locking ...      ' + logState);
       locked = locked + 1;
       waiting = 2;
     } else {
-      console.log('Searching...     ' + logState);
+      //console.log('Searching...     ' + logState);
       leds.off();
       waiting = waiting + 1;
     }
@@ -106,14 +106,12 @@ var statesInterval = function () {
     reset();
   }
   if (locked === 5) {
-    console.log('LOCKED!          ' + logState);
     leds.on(0,1,0);
     radioToggle();
     locked = locked + 1;
   }
   if (locked > 5) {
     leds.on(0,1,0);
-    console.log('LOCKED!          ' + logState);
     locked = locked + 1;
   }
   if (locked === 30) {
