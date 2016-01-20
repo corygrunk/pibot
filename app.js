@@ -55,12 +55,15 @@ var checkSerial = function () {
 }
 
 var shutdownNow = function () {
+  new Sound('sounds/sleep/sleep1.wav').play();
   leds.off();
-  exec('mpc stop && pkill -f \'app.js\'', function(error, stdout, stderr) {
-    if (error !== null) {
+  setTimeout(function () {
+    exec('mpc stop && pkill -f \'app.js\'', function(error, stdout, stderr) {
+      if (error !== null) {
         console.log('exec error: ' + error);
-    }
-  });
+      }
+    });
+  }, 3000);
 }
 
 // INIT
