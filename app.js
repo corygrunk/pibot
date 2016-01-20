@@ -8,6 +8,8 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var leds = require('./lib/leds');
+var Sound = require('node-aplay');
+
 
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
@@ -51,6 +53,9 @@ radioStop();
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
+  
+  new Sound('sounds/wakey/wakey1.wav').play();
+
   sp.on('data', function(data) {
     if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
