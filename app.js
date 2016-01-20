@@ -34,7 +34,13 @@ var getIntent = function () {
       var confidence = res.outcomes[0].confidence;
       console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
       if (intent === "Radio" && confidence > .5) {
-        radioToggle();    
+        radioToggle();
+      }    
+      if (intent === "OpenAir" && confidence > .5) {
+        radioStation(2);
+      }
+      if (intent === "NPR" && confidence > .5) {
+        radioStation(1);
       } else {
         console.log('I\'m not sure what you said.');
       }
@@ -44,7 +50,7 @@ var getIntent = function () {
 
 var recordAudio = function () {
   new Sound('sounds/wakey/wakey2.wav').play();
-  radioVolume(40);
+  radioVolume(50);
   setTimeout(function () {
     console.log('Start recording...');
     exec('arecord -D plughw:1 --duration=3 -f cd sample.wav', function(error, stdout, stderr) {
@@ -63,9 +69,18 @@ var recordAudio = function () {
 var radioVolume = function (volume) {
   exec('mpc volume ' + volume, function(error, stdout, stderr) {
     if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+  });
+}
+
+var radioStation = function (stationNum) {
+  exec('mpc play ' + stationNum, function(error, stdout, stderr) {
+    if (error !== null) {
         console.log('exec error: ' + error);
     }
   });
+  radioState = 1;
 }
 
 var radioStart = function () {
