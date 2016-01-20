@@ -19,6 +19,7 @@ var searching = 0;
 var locked = 0;
 var shutdown = 0;
 var radioState = 0;
+var serialState = 0;
 
 var radioStart = function () {
   exec('mpc play 1', function(error, stdout, stderr) {
@@ -46,6 +47,22 @@ var radioToggle = function () {
   }
 }
 
+var checkSerial = function () {
+  if (senses.distance && serialState === 0) {
+    new Sound('sounds/wakey/wakey1.wav').play();
+    serialState = 1
+  }
+}
+
+var shutdownNow = function () {
+  leds.off();
+  exec('mpc stop && pkill -f \'app.js\'', function(error, stdout, stderr) {
+    if (error !== null) {
+        console.log('exec error: ' + error);
+    }
+  });
+}
+
 // INIT
 console.log("Starting up...");
 leds.off();
@@ -54,13 +71,11 @@ radioStop();
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 sp.on('open', function () {
   console.log('Serial connection started.');
-  
-  new Sound('sounds/wakey/wakey1.wav').play();
-
   sp.on('data', function(data) {
     if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
       senses = JSON.parse(data);
     };
+    checkSerial();
     states();
   });
 });
@@ -101,8 +116,8 @@ var statesInterval = function () {
       locked = locked + 1;
       waiting = 2;
     } else if (senses.distance < 5) { // SENSE A SHUTDOWN COMMAND
-      leds.on(1,0,0);
       shutdown = shutdown + 1;
+      //console.log(shutdown);
       waiting = 2;
     } else {
       //console.log('Searching...     ' + logState);
@@ -130,7 +145,11 @@ var statesInterval = function () {
     reset();
   }
   if (shutdown > 0) {
-    console.log(shutdown);
+    leds.on(1,0,0);;
+  }
+  if (shutdown === 30) {
+    console.log("SHUTTING DOWN...");
+    shutdownNow();
   }
 }
 
