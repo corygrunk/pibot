@@ -9,6 +9,25 @@ var exec = require('child_process').exec;
 var child;
 var leds = require('./lib/leds');
 var Sound = require('node-aplay');
+var wit = require('node-wit');
+var fs = require('fs');
+var ACCESS_TOKEN = "7XE5FW2NHTFIHAL2IAD6LMRRD5NQB43S";
+
+
+console.log("Sending text & audio to Wit.AI");
+ 
+wit.captureTextIntent(ACCESS_TOKEN, "Hello world", function (err, res) {
+    console.log("Response from Wit for text input: ");
+    if (err) console.log("Error: ", err);
+    console.log(JSON.stringify(res, null, " "));
+});
+ 
+var stream = fs.createReadStream('sample.wav');
+wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
+    console.log("Response from Wit for audio stream: ");
+    if (err) console.log("Error: ", err);
+    console.log(JSON.stringify(res, null, " "));
+});
 
 
 // SENSOR OBJECT - senses.distance & senses.motion
