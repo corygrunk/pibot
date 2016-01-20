@@ -132,6 +132,7 @@ var statesInterval = function () {
     reset();
   }
   if (locked === 5) {
+    console.log('LOCKED!          ' + logState);
     leds.on(0,1,0);
     radioToggle();
     locked = locked + 1;
@@ -141,7 +142,6 @@ var statesInterval = function () {
     locked = locked + 1;
   }
   if (locked === 30) {
-    console.log('LOCKED!          ' + logState);
     reset();
   }
   if (shutdown > 0) {
