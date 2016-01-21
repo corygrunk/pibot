@@ -23,7 +23,7 @@ var waiting = 0;
 var searching = 0;
 var locked = 0;
 var shutdown = 0;
-var radioState = 0;
+var recording = 0;
 var serialState = 0;
 
 var soundsRadioOpenair = new Sound('sounds/custom/radio-openair.wav');
@@ -124,7 +124,7 @@ var reset = function () {
 var statesInterval = function () {
   var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // ALL IS QUIET
-  if (senses.motion === 0 && waiting === 0 && locked === 0) {
+  if (senses.motion === 0 && waiting === 0 && locked === 0 && recording === 0) {
     //console.log('Zzzzzzzz....     ' + logState);
     leds.off();
     waiting = 0;
@@ -132,7 +132,6 @@ var statesInterval = function () {
   // MOTION DETECTED
   if (senses.motion === 1 && waiting === 0 && locked === 0) {
     //console.log('Is someone there?' + logState);
-    leds.on(1,0,0);
     waiting = 1;
   }
   if (waiting === 1) {
@@ -168,7 +167,6 @@ var statesInterval = function () {
     locked = locked + 1;
   }
   if (locked > 5) {
-    leds.on(0,1,0);
     locked = locked + 1;
   }
   if (locked === 30) {
