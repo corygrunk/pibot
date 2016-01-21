@@ -28,7 +28,7 @@ var serialState = 0;
 
 var getIntent = function () {
   console.log("Sending audio to Wit...");
-  setTimeout(function () { new Sound('sounds/custom/just-a-second.wav').play() }, 1000);
+  // setTimeout(function () { new Sound('sounds/custom/just-a-second.wav').play() }, 1000);
   var stream = fs.createReadStream('sample.wav');
   wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
     console.log('Waiting for WIT');
@@ -43,6 +43,8 @@ var getIntent = function () {
         radioStation(2);
       } else if (intent === "NPR" && confidence > .5) {
         radioStation(1);
+      } else if (intent === "Hello" && confidence > .5) {
+        new Sound('sounds/custom/hello.wav').play();
       } else {
         console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
         new Sound('sounds/custom/i-dont-understand.wav').play();
