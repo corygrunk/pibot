@@ -8,6 +8,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var leds = require('./lib/leds');
+var radio = require('./lib/radio');
 var Sound = require('node-aplay');
 var wit = require('node-wit');
 var fs = require('fs');
@@ -39,24 +40,23 @@ var getIntent = function () {
       var confidence = res.outcomes[0].confidence;
       console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
       if (intent === "Radio" && confidence > .5) {
-         // console.log('Entity: ' + res.outcomes[0].entities.on_off[0].value);
-         if (res.outcomes[0].entities.on_off[0].value === 'on') { radioStart(); }
-         if (res.outcomes[0].entities.on_off[0].value === 'off') { radioStop(); }
-         else { radioToggle(); }
+         if (res.outcomes[0].entities.on_off[0].value === 'on') { radio.on(); }
+         if (res.outcomes[0].entities.on_off[0].value === 'off') { radio.off(); }
+         else { radio.toggle(); }
       } else if (intent === "OpenAir" && confidence > .5) {
         soundsRadioOpenair.play();
         soundsRadioOpenair.on('complete', function () {
-         radioStation(2);
+         radio.station(2);
         });
       } else if (intent === "NPR" && confidence > .5) {
         soundsRadioNPR.play();
         soundsRadioNPR.on('complete', function () {
-           radioStation(1);
+           radio.station(1);
         });
       } else if (intent === "WWOZ" && confidence > .5) {
         soundsRadioWWOZ.play();
         soundsRadioWWOZ.on('complete', function () {
-           radioStation(4);
+           radio.station(4);
         });
       } else if (intent === "Hello" && confidence > .5) {
         new Sound('sounds/custom/hello.wav').play();
@@ -72,8 +72,7 @@ var getIntent = function () {
 }
 
 var recordAudio = function () {
-  //if (radioState === 1) { radioVolume(50); }
-  radioStop();
+  radio.off();
   new Sound('sounds/custom/what-can-i-do.wav').play();
   setTimeout(function () {
     console.log('Start recording...');
@@ -87,52 +86,8 @@ var recordAudio = function () {
   setTimeout(function () {
     console.log('Recording complete.');
     new Sound('sounds/boopC.wav').play();
-    // if (radioState === 1) { radioVolume(90); }
     setTimeout(getIntent(), 300);
   }, 4300);
-}
-
-var radioVolume = function (volume) {
-  exec('mpc volume ' + volume, function(error, stdout, stderr) {
-    if (error !== null) {
-      console.log('exec error: ' + error);
-    }
-  });
-}
-
-var radioStation = function (stationNum) {
-  exec('mpc play ' + stationNum, function(error, stdout, stderr) {
-    if (error !== null) {
-        console.log('exec error: ' + error);
-    }
-  });
-  radioState = 1;
-}
-
-var radioStart = function () {
-  exec('mpc play 1', function(error, stdout, stderr) {
-    if (error !== null) {
-        console.log('exec error: ' + error);
-    }
-  });
-}
-
-var radioStop = function () {
-  exec('mpc stop', function(error, stdout, stderr) {
-    if (error !== null) {
-        console.log('exec error: ' + error);
-    }
-  });
-}
-
-var radioToggle = function () {
-  if (radioState === 1) {
-    radioStop();
-    radioState = 0;
-  } else {
-    radioStart();
-    radioState = 1;
-  }
 }
 
 var checkSerial = function () {
@@ -156,25 +111,6 @@ var shutdownNow = function () {
     });
   }, 3000);
 }
-
-// INIT
-console.log("Starting up...");
-leds.off();
-radioStop();
-
-// TURN ON ARDUINO SERIAL COMMUNITCATION
-sp.on('open', function () {
-  console.log('Serial connection started.');
-  sp.on('data', function(data) {
-    if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
-      senses = JSON.parse(data);
-    };
-    checkSerial();
-    states();
-  });
-});
-
-
 
 var reset = function () {
   waiting = 0;
@@ -229,7 +165,6 @@ var statesInterval = function () {
     //console.log('LOCKED!          ' + logState);
     leds.on(0,1,0);
     recordAudio();
-    //radioToggle();
     locked = locked + 1;
   }
   if (locked > 5) {
@@ -251,6 +186,23 @@ var statesInterval = function () {
 var states = function () {
   setTimeout(statesInterval, 5000);
 }
+
+// INIT
+console.log("Starting up...");
+leds.off();
+radio.off();
+
+// TURN ON ARDUINO SERIAL COMMUNITCATION
+sp.on('open', function () {
+  console.log('Serial connection started.');
+  sp.on('data', function(data) {
+    if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
+      senses = JSON.parse(data);
+    };
+    checkSerial();
+    states();
+  });
+});
 
 // EXIT
 var exit = function () {
