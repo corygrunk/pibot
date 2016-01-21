@@ -16,8 +16,7 @@ var dotenv = require('dotenv');
   dotenv.load();
 var ACCESS_TOKEN = process.env.WIT_AI_TOKEN || null;
 
-// SENSOR OBJECT - senses.distance & senses.motion
-var senses = {};
+var senses = {}; // SENSOR OBJECT - senses.distance & senses.motion
 
 var waiting = 0;
 var searching = 0;
@@ -26,22 +25,39 @@ var shutdown = 0;
 var radioState = 0;
 var serialState = 0;
 
+var soundsRadioOpenair = new Sound('sounds/custom/radio-openair.wav');
+var soundsRadioNPR = new Sound('sounds/custom/radio-npr.wav');
+var soundsRadioWWOZ = new Sound('sounds/custom/radio-wwoz.wav');
+
 var getIntent = function () {
   console.log("Sending audio to Wit...");
   var stream = fs.createReadStream('sample.wav');
   wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
     if (err) console.log("Error: ", err);
-    if (res && res.outcomes.length > 0) {
-      console.log(res);
+    if (res && res.outcomes && res.outcomes.length > 0) {
       var intent = res.outcomes[0].intent;
       var confidence = res.outcomes[0].confidence;
       console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
       if (intent === "Radio" && confidence > .5) {
-        radioToggle();
+         // console.log('Entity: ' + res.outcomes[0].entities.on_off[0].value);
+         if (res.outcomes[0].entities.on_off[0].value === 'on') { radioStart(); }
+         if (res.outcomes[0].entities.on_off[0].value === 'off') { radioStop(); }
+         else { radioToggle(); }
       } else if (intent === "OpenAir" && confidence > .5) {
-        radioStation(2);
+        soundsRadioOpenair.play();
+        soundsRadioOpenair.on('complete', function () {
+         radioStation(2);
+        });
       } else if (intent === "NPR" && confidence > .5) {
-        radioStation(1);
+        soundsRadioNPR.play();
+        soundsRadioNPR.on('complete', function () {
+           radioStation(1);
+        });
+      } else if (intent === "WWOZ" && confidence > .5) {
+        soundsRadioWWOZ.play();
+        soundsRadioWWOZ.on('complete', function () {
+           radioStation(4);
+        });
       } else if (intent === "Hello" && confidence > .5) {
         new Sound('sounds/custom/hello.wav').play();
       } else {
@@ -56,7 +72,8 @@ var getIntent = function () {
 }
 
 var recordAudio = function () {
-  if (radioState === 1) { radioVolume(50); }
+  //if (radioState === 1) { radioVolume(50); }
+  radioStop();
   new Sound('sounds/custom/what-can-i-do.wav').play();
   setTimeout(function () {
     console.log('Start recording...');
@@ -70,7 +87,7 @@ var recordAudio = function () {
   setTimeout(function () {
     console.log('Recording complete.');
     new Sound('sounds/boopC.wav').play();
-    if (radioState === 1) { radioVolume(90); }
+    // if (radioState === 1) { radioVolume(90); }
     setTimeout(getIntent(), 300);
   }, 4300);
 }
@@ -122,7 +139,6 @@ var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
     setTimeout(function () {
-      // new Sound('sounds/wakey/wakey1.wav').play();
       console.log('Activated');
       new Sound('sounds/custom/online.wav').play();
     }, 5000);
@@ -133,7 +149,7 @@ var shutdownNow = function () {
   new Sound('sounds/custom/goodbye.wav').play();
   leds.off();
   setTimeout(function () {
-    exec('mpc stop && pkill -f \'app.js\'', function(error, stdout, stderr) {
+    exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
       if (error !== null) {
         console.log('exec error: ' + error);
       }
@@ -210,7 +226,7 @@ var statesInterval = function () {
     reset();
   }
   if (locked === 5) {
-    console.log('LOCKED!          ' + logState);
+    //console.log('LOCKED!          ' + logState);
     leds.on(0,1,0);
     recordAudio();
     //radioToggle();
