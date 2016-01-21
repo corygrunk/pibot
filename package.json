@@ -5,6 +5,7 @@
   "description": "I am a robot",
   "main": "app.js",
   "dependencies": {
+    "dotenv": "^2.0.0",
     "node-aplay": "^1.0.3",
     "node-wit": "^2.0.0",
     "onoff": "^1.0.3",

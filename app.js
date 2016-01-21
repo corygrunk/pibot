@@ -11,7 +11,10 @@ var leds = require('./lib/leds');
 var Sound = require('node-aplay');
 var wit = require('node-wit');
 var fs = require('fs');
-var ACCESS_TOKEN = "7XE5FW2NHTFIHAL2IAD6LMRRD5NQB43S";
+var dotenv = require('dotenv');
+  dotenv.config({silent: true});
+  dotenv.load();
+var ACCESS_TOKEN = process.env.WIT_AI_TOKEN || null;
 
 // SENSOR OBJECT - senses.distance & senses.motion
 var senses = {};
