@@ -50,10 +50,10 @@ var getIntent = function () {
 }
 
 var recordAudio = function () {
-  new Sound('sounds/boop.wav').play();
   if (radioState === 1) { radioVolume(50); }
   setTimeout(function () {
     console.log('Start recording...');
+    new Sound('sounds/boopG.wav').play();
     exec('arecord -D plughw:1 --duration=3 -f cd sample.wav', function(error, stdout, stderr) {
       if (error !== null) {
         console.log('exec error: ' + error);
@@ -62,6 +62,7 @@ var recordAudio = function () {
   }, 300);
   setTimeout(function () {
     console.log('Recording complete.');
+    new Sound('sounds/boopC.wav').play();
     if (radioState === 1) { radioVolume(90); }
     getIntent();
   }, 3700);
