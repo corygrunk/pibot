@@ -28,6 +28,7 @@ var serialState = 0;
 
 var getIntent = function () {
   console.log("Sending audio to Wit...");
+  setTimeout(function () { new Sound('sounds/custom/just-a-second.wav').play() }, 1000);
   var stream = fs.createReadStream('sample.wav');
   wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
     console.log('Waiting for WIT');
@@ -44,6 +45,7 @@ var getIntent = function () {
         radioStation(1);
       } else {
         console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
+        new Sound('sounds/custom/i-dont-understand.wav').play();
       }
     }
   });
@@ -51,6 +53,7 @@ var getIntent = function () {
 
 var recordAudio = function () {
   if (radioState === 1) { radioVolume(50); }
+  new Sound('sounds/custom/what-can-i-do.wav').play();
   setTimeout(function () {
     console.log('Start recording...');
     new Sound('sounds/boopG.wav').play();
@@ -59,13 +62,13 @@ var recordAudio = function () {
         console.log('exec error: ' + error);
       }
     });
-  }, 300);
+  }, 1300);
   setTimeout(function () {
     console.log('Recording complete.');
     new Sound('sounds/boopC.wav').play();
     if (radioState === 1) { radioVolume(90); }
     getIntent();
-  }, 3700);
+  }, 4300);
 }
 
 var radioVolume = function (volume) {
@@ -117,12 +120,13 @@ var checkSerial = function () {
     setTimeout(function () {
       // new Sound('sounds/wakey/wakey1.wav').play();
       console.log('Activated');
+      new Sound('sounds/custom/online.wav').play();
     }, 5000);
   }
 }
 
 var shutdownNow = function () {
-  new Sound('sounds/sleep/sleep1.wav').play();
+  new Sound('sounds/custom/goodbye.wav').play();
   leds.off();
   setTimeout(function () {
     exec('mpc stop && pkill -f \'app.js\'', function(error, stdout, stderr) {
