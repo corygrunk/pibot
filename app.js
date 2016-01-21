@@ -38,7 +38,10 @@ var getIntent = function () {
     if (res && res.outcomes && res.outcomes.length > 0) {
       var intent = res.outcomes[0].intent;
       var confidence = res.outcomes[0].confidence;
-      console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
+      //console.log("Received response from Wit: Intent: " + intent + " / Confidence: " + confidence);      
+      console.log(res);
+      leds.blink(0,0,1);
+      reset();
       if (intent === "Radio" && confidence > .5) {
          if (res.outcomes[0].entities.on_off[0].value === 'on') { radio.on(); }
          if (res.outcomes[0].entities.on_off[0].value === 'off') { radio.off(); }
@@ -67,6 +70,7 @@ var getIntent = function () {
     } else {
       console.log('I\'m not sure I understand.');
       new Sound('sounds/custom/i-dont-understand.wav').play();
+      reset();
     }
   });
 }
@@ -76,6 +80,7 @@ var recordAudio = function () {
   new Sound('sounds/custom/what-can-i-do.wav').play();
   setTimeout(function () {
     console.log('Start recording...');
+    leds.on(1,1,0);
     new Sound('sounds/boopG.wav').play();
     exec('arecord -D plughw:1 --duration=3 -f cd sample.wav', function(error, stdout, stderr) {
       if (error !== null) {
@@ -85,6 +90,7 @@ var recordAudio = function () {
   }, 1300);
   setTimeout(function () {
     console.log('Recording complete.');
+    leds.off();
     new Sound('sounds/boopC.wav').play();
     setTimeout(getIntent(), 300);
   }, 4300);
@@ -95,6 +101,7 @@ var checkSerial = function () {
     serialState = 1;
     setTimeout(function () {
       console.log('Activated');
+      leds.blink(0,1,0);
       new Sound('sounds/custom/online.wav').play();
     }, 5000);
   }
@@ -118,71 +125,58 @@ var reset = function () {
   locked = 0;
   shutdown = 0;
   leds.off();
-  //console.log('Reset');
+  // console.log('Reset');
 }
 
 var statesInterval = function () {
-  var logState = ' ///  waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
-  // ALL IS QUIET
-  if (senses.motion === 0 && waiting === 0 && locked === 0 && recording === 0) {
-    //console.log('Zzzzzzzz....     ' + logState);
-    leds.off();
-    waiting = 0;
+  var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
+  //console.log(logState);
+  var searchDuration = 10;
+  if (senses.distance >= 10 && senses.distance <= 30) {
+    searching = searching + 1;
   }
-  // MOTION DETECTED
-  if (senses.motion === 1 && waiting === 0 && locked === 0) {
-    //console.log('Is someone there?' + logState);
-    waiting = 1;
+  if (senses.distance < 5) {
+    shutdown = shutdown + 1;
   }
-  if (waiting === 1) {
-    waiting = 2;
-  }
-  // SEARCHING...
-  if (waiting >= 2 && waiting <= 10 && locked <= 5) {
-    if (senses.distance > 10 && senses.distance < 30) { // SENSE A LOCK COMMAND
-      leds.on(0,0,1);
-      //console.log('Locking ...      ' + logState);
-      locked = locked + 1;
-      waiting = 2;
-    } else if (senses.distance < 5) { // SENSE A SHUTDOWN COMMAND
-      shutdown = shutdown + 1;
-      //console.log(shutdown);
-      waiting = 2;
-    } else {
-      //console.log('Searching...     ' + logState);
-      leds.off();
-      waiting = waiting + 1;
-    }
-  }
-  if (senses.motion === 1 && waiting > 10 && locked < 5) {
-    waiting = 2;
-  }
-  if (senses.motion === 0 && waiting > 10 && locked < 5) {
+  if (senses.distance >= 10 && shutdown > 0 && shutdown < searchDuration) {
     reset();
   }
-  if (locked === 5) {
-    //console.log('LOCKED!          ' + logState);
+  if (searching > 0 && searching < searchDuration && locked === 0 && shutdown === 0) {
+    console.log('Locking... ' + searching);
+    leds.on(0,0,1);
+  }
+  if (searching > 0 && searching < searchDuration && senses.distance > 30) {
+    reset();
+  }
+  if (searching === searchDuration) {
+    locked = 1;
+  }
+  if (locked === 1) {
+    console.log('LOCKED');
     leds.on(0,1,0);
+    locked = 2;
     recordAudio();
-    locked = locked + 1;
+    //pause(5000);
   }
-  if (locked > 5) {
-    locked = locked + 1;
+  if (shutdown > 0 && shutdown <= searchDuration + 10) {
+    leds.on(1,0,0);
   }
-  if (locked === 30) {
-    reset();
-  }
-  if (shutdown > 0) {
-    leds.on(1,0,0);;
-  }
-  if (shutdown === 30) {
-    console.log("SHUTTING DOWN...");
-    shutdownNow();
+  if (shutdown === searchDuration + 10) {
+    console.log('SHUTDOWN');
+    // shutdownNow();
   }
 }
 
+var pause = function (time) {
+  console.log('Pause called.');
+  setTimeout(function () {
+    console.log('Pause timeout');
+    reset();
+  }, time);
+}
+
 var states = function () {
-  setTimeout(statesInterval, 5000);
+  setTimeout(statesInterval, 1000);
 }
 
 // INIT
