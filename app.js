@@ -113,9 +113,11 @@ var radioToggle = function () {
 
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
-    // new Sound('sounds/wakey/wakey1.wav').play();
-    console.log('Activated');
-    serialState = 1
+    serialState = 1;
+    setTimeout(function () {
+      // new Sound('sounds/wakey/wakey1.wav').play();
+      console.log('Activated');
+    }, 5000);
   }
 }
 
