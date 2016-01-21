@@ -40,7 +40,7 @@ var getIntent = function () {
       } else if (intent === "NPR" && confidence > .5) {
         radioStation(1);
       } else {
-        console.log('I\'m not sure what you said.');
+        console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
       }
     }
   });
