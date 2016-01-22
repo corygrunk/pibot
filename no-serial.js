@@ -22,31 +22,3 @@ var mockSerial = function () {
   serialCounter = serialCounter + 1;
 }
 setInterval(mockSerial, 200);
-
-
-var waiting = 0;
-var searching = 0;
-
-var action = function () {
-  if (senses.motion === 1) {
-    waiting = waiting + 1;
-  }
-  states();
-}
-
-var states = function () {
-  if (waiting === 1) {
-    console.log('Is someone there?');
-    watiing = 2;
-  }
-  if (waiting > 1) {
-    console.log('Is someone there...');
-  }
-  if (searching === 1) {
-    console.log('I see you.');
-    searching = 2;
-  }
-  if (searching > 1) {
-    console.log('Still see you...');
-  }
-}
