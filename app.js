@@ -100,7 +100,7 @@ var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
     setTimeout(function () {
-      console.log('Activated');
+      console.log('Activated.');
       leds.blink(0,1,0);
       new Sound('sounds/custom/online.wav').play();
     }, 5000);
@@ -138,7 +138,7 @@ var statesInterval = function () {
     searching = searching + 1;
   }
   if (searching > 0 && searching < searchDuration && locked === 0) {
-    console.log('Locking... ' + searching);
+    // console.log('Locking... ' + searching);
     leds.on(0,0,1);
   }
   if (searching > 0 && searching < searchDuration && senses.distance > maxLockDist) {
@@ -151,19 +151,11 @@ var statesInterval = function () {
     locked = 1;
   }
   if (locked === 1) {
-    console.log('LOCKED');
+    // console.log('LOCKED');
     leds.on(0,1,0);
     locked = 2;
     recordAudio();
   }
-}
-
-var pause = function (time) {
-  console.log('Pause called.');
-  setTimeout(function () {
-    console.log('Pause timeout');
-    reset();
-  }, time);
 }
 
 var states = function () {
