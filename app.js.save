@@ -11,7 +11,6 @@ var leds = require('./lib/leds');
 var radio = require('./lib/radio');
 var Sound = require('node-aplay');
 var wit = require('node-wit');
-var weather = require('weather-js');
 var fs = require('fs');
 var dotenv = require('dotenv');
   dotenv.config({silent: true});
@@ -27,8 +26,6 @@ var recording = 0;
 var serialState = 0;
 var radioState = 0;
 
-var soundsHello = new Sound('sounds/custom/hello.wav');
-var soundsShutdown = new Sound('sounds/custom/goodbye.wav');
 var soundsRadioOpenair = new Sound('sounds/custom/radio-openair.wav');
 var soundsRadioNPR = new Sound('sounds/custom/radio-npr.wav');
 var soundsRadioWWOZ = new Sound('sounds/custom/radio-wwoz.wav');
@@ -58,88 +55,55 @@ var getIntent = function () {
           console.log('Radio Toggle.');
         }
       } else if (intent === "OpenAir" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        setTimeout(function () { soundsRadioOpenair.play(); }, 400);
+        soundsRadioOpenair.play();
         soundsRadioOpenair.on('complete', function () {
           radio.station(2);
           radioState = 1;
           console.log('Radio play OpenAir.');
-          if (radioState === 1) { radio.on(); };
         });
       } else if (intent === "NPR" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        setTimeout(function () { soundsRadioNPR.play(); }, 400);
+        soundsRadioNPR.play();
         soundsRadioNPR.on('complete', function () {
            radio.station(1);
            radioState = 1
            console.log('Radio play NPR.');
-           if (radioState === 1) { radio.on(); };
         });
       } else if (intent === "WWOZ" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioWWOZ.play(); }, 400);
+        soundsRadioWWOZ.play();
         soundsRadioWWOZ.on('complete', function () {
            radio.station(4);
            radioState = 1;
            console.log('Radio play WWOZ.');
-           if (radioState === 1) { radio.on(); };
         });
       } else if (intent === "RadioNext" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioNext.play(); }, 400);
+        soundsRadioNext.play();
         soundsRadioNext.on('complete', function () {
            radio.next();
            radioState = 1;
            console.log('Radio play next station.');
-           if (radioState === 1) { radio.on(); };
         });
       } else if (intent === "RadioPrev" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioPrev.play(); }, 400);
+        soundsRadioPrev.play();
         soundsRadioPrev.on('complete', function () {
            radio.prev();
            radioState = 1
            console.log('Radio play previous station.');
-           if (radioState === 1) { radio.on(); };
         });
       } else if (intent === "RadioVolumeUp" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioVolumeUp.play(); }, 400);
+        soundsRadioVolumeUp.play();
         soundsRadioVolumeUp.on('complete', function () {
            radio.volumeUp();
            console.log('Turning volume up.');
-           if (radioState === 1) { radio.on(); };
         });
       } else if (intent === "RadioVolumeDown" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioVolumeDown.play(); }, 400);
+        soundsRadioVolumeDown.play();
         soundsRadioVolumeDown.on('complete', function () {
            radio.volumeDown();
            console.log('Turning volume down.');
-           if (radioState === 1) { radio.on(); };
         });
-      } else if (intent === "Shutdown" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsShutdown.play(); }, 400);
-        soundsShutdown.on('complete', function () {
-          console.log('Shutting down...'); 
-          shutdownNow();
-        });
-      } else if (intent === "WeatherCurrent" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        getWeather('Denver', function (wx) {
-          tts(wx);
-        });
-        setTimeout(function () {
-          if (radioState === 1) { radio.on(); };
-        }, 3000);
       } else if (intent === "Hello" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        setTimeout(function () { soundsHello.play(); }, 400);
-        soundsHello.on('complete', function () {
-          if (radioState === 1) { radio.on(); };
-          console.log('Hello');
-        });
+        new Sound('sounds/custom/hello.wav').play();
+        console.log('Hello.');
       } else {
         console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
         new Sound('sounds/custom/i-dont-understand.wav').play();
@@ -176,26 +140,6 @@ var recordAudio = function () {
   }, 4300);
 }
 
-var tts = function (text) {
-  exec('pico2wave -w temp.wav \'' + text + '\'', function(error, stdout, stderr) {
-    if (error !== null) {
-      console.log('exec error: ' + error);
-    }
-    new Sound('temp.wav').play();
-  });
-}
-
-var getWeather = function (location, callback) {
-  weather.find({search: location, degreeType: 'F'}, function(err, result) {
-    if(err) console.log(err);
-    if (result && result.length > 0) {
-      var currentTemp = result[0].current.temperature;
-      var currentCond = result[0].current.skytext;
-      callback('It is currently ' + currentCond + ' and ' + currentTemp + ' degrees.');
-    }
-  });
-}
-
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
@@ -208,6 +152,7 @@ var checkSerial = function () {
 }
 
 var shutdownNow = function () {
+  new Sound('sounds/custom/goodbye.wav').play();
   leds.off();
   setTimeout(function () {
     exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
@@ -231,7 +176,7 @@ var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   //console.log(logState);
   var searchDuration = 10;
-  var minLockDist = 5;
+  var minLockDist = 10;
   var maxLockDist = 30;
   if (senses.distance >= minLockDist && senses.distance <= maxLockDist) {
     searching = searching + 1;

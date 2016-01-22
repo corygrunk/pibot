@@ -9,6 +9,7 @@
     "node-aplay": "^1.0.3",
     "node-wit": "^2.0.0",
     "onoff": "^1.0.3",
-    "serialport": "^2.0.5"
+    "serialport": "^2.0.5",
+    "weather-js": "^1.0.2"
   }
 }
