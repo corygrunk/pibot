@@ -27,6 +27,7 @@ var serialState = 0;
 var radioState = 0;
 
 var soundsHello = new Sound('sounds/custom/hello.wav');
+var soundsShutdown = new Sound('sounds/custom/goodbye.wav');
 var soundsRadioOpenair = new Sound('sounds/custom/radio-openair.wav');
 var soundsRadioNPR = new Sound('sounds/custom/radio-npr.wav');
 var soundsRadioWWOZ = new Sound('sounds/custom/radio-wwoz.wav');
@@ -101,6 +102,12 @@ var getIntent = function () {
         soundsRadioVolumeDown.on('complete', function () {
            radio.volumeDown();
            console.log('Turning volume down.');
+        });
+      } else if (intent === "Shutdown" && confidence > .5) {
+        soundsShutdown.play();
+        soundsShutdown.on('complete', function () {
+          console.log('Shutting down...'); 
+          shutdownNow();
         });
       } else if (intent === "Hello" && confidence > .5) {
         if (radioState === 1) { radio.off(); };
