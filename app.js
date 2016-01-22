@@ -166,7 +166,6 @@ var checkSerial = function () {
 }
 
 var shutdownNow = function () {
-  new Sound('sounds/custom/goodbye.wav').play();
   leds.off();
   setTimeout(function () {
     exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
