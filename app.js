@@ -132,20 +132,19 @@ var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   //console.log(logState);
   var searchDuration = 10;
-  if (senses.distance >= 10 && senses.distance <= 30) {
+  var minLockDist = 10;
+  var maxLockDist = 30;
+  if (senses.distance >= minLockDist && senses.distance <= maxLockDist) {
     searching = searching + 1;
   }
-  if (senses.distance < 5) {
-    shutdown = shutdown + 1;
-  }
-  if (senses.distance >= 10 && shutdown > 0 && shutdown < searchDuration) {
-    reset();
-  }
-  if (searching > 0 && searching < searchDuration && locked === 0 && shutdown === 0) {
+  if (searching > 0 && searching < searchDuration && locked === 0) {
     console.log('Locking... ' + searching);
     leds.on(0,0,1);
   }
-  if (searching > 0 && searching < searchDuration && senses.distance > 30) {
+  if (searching > 0 && searching < searchDuration && senses.distance > maxLockDist) {
+    reset();
+  }
+  if (searching > 0 && searching < searchDuration && senses.distance < minLockDist) {
     reset();
   }
   if (searching === searchDuration) {
@@ -156,14 +155,6 @@ var statesInterval = function () {
     leds.on(0,1,0);
     locked = 2;
     recordAudio();
-    //pause(5000);
-  }
-  if (shutdown > 0 && shutdown <= searchDuration + 10) {
-    leds.on(1,0,0);
-  }
-  if (shutdown === searchDuration + 10) {
-    console.log('SHUTDOWN');
-    // shutdownNow();
   }
 }
 
