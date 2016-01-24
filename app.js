@@ -314,10 +314,9 @@ if (process.env.NODE_ENV === 'development') {
       console.log('Keypress = ');
     }
   });
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
 }
-
-process.stdin.setRawMode(true);
-process.stdin.resume();
 
 // EXIT
 var exit = function () {
