@@ -1,24 +1,44 @@
-var serialport = require("serialport");
-var SerialPort = serialport.SerialPort; // localize object constructor
-var sp = new SerialPort("/dev/ttyUSB0", {
-  baudrate: 19200,
-  parser: serialport.parsers.readline("\n")
-});
+var dotenv = require('dotenv');
+  dotenv.config({silent: true});
+  dotenv.load();
 var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
+var audio = require('./lib/sox-play');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
+var sox = require('sox');
 var Sound = require('node-aplay');
 var wit = require('node-wit');
 var weather = require('weather-js');
 var fs = require('fs');
-var dotenv = require('dotenv');
-  dotenv.config({silent: true});
-  dotenv.load();
+
+// DEV REQUIRE
+if (process.env.NODE_ENV === 'development') {
+  var keypress = require('keypress');
+  keypress(process.stdin);
+}
+
+// PRODUCTION HARDWARE
+if (process.env.NODE_ENV !== 'development') {
+  var serialport = require("serialport");
+  var SerialPort = serialport.SerialPort; // localize object constructor
+  var sp = new SerialPort("/dev/ttyUSB0", {
+    baudrate: 19200,
+    parser: serialport.parsers.readline("\n")
+  });
+}
 var ACCESS_TOKEN = process.env.WIT_AI_TOKEN || null;
 
 var senses = {}; // SENSOR OBJECT - senses.distance & senses.motion
+if (process.env.NODE_ENV === 'development') {
+  senses = { motion: 0, distance: 141 }
+}
+
+
+var searchDuration = 10;
+var minLockDist = 5;
+var maxLockDist = 30;
 
 var waiting = 0;
 var searching = 0;
@@ -48,104 +68,110 @@ var getIntent = function () {
       console.log(res);
       leds.blink(0,0,1);
       reset();
-      if (intent === "Radio" && confidence > .5) {
-        if (res.outcomes[0].entities && res.outcomes[0].entities.length > 0) {
-          if (res.outcomes[0].entities.on_off[0].value === 'on') { radio.on(); radioState = 1; console.log('Radio On.') }
-          if (res.outcomes[0].entities.on_off[0].value === 'off') { radio.off(); radioState = 0; console.log('Radio Off.') }
-        } else { 
-          radio.toggle();
-          radioState === 1 ? radioState = 0 : radioState = 1; 
-          console.log('Radio Toggle.');
-        }
-      } else if (intent === "OpenAir" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        setTimeout(function () { soundsRadioOpenair.play(); }, 400);
-        soundsRadioOpenair.on('complete', function () {
-          radio.station(2);
-          radioState = 1;
-          console.log('Radio play OpenAir.');
-          if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "NPR" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        setTimeout(function () { soundsRadioNPR.play(); }, 400);
-        soundsRadioNPR.on('complete', function () {
-           radio.station(1);
-           radioState = 1
-           console.log('Radio play NPR.');
-           if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "WWOZ" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioWWOZ.play(); }, 400);
-        soundsRadioWWOZ.on('complete', function () {
-           radio.station(4);
-           radioState = 1;
-           console.log('Radio play WWOZ.');
-           if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "RadioNext" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioNext.play(); }, 400);
-        soundsRadioNext.on('complete', function () {
-           radio.next();
-           radioState = 1;
-           console.log('Radio play next station.');
-           if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "RadioPrev" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioPrev.play(); }, 400);
-        soundsRadioPrev.on('complete', function () {
-           radio.prev();
-           radioState = 1
-           console.log('Radio play previous station.');
-           if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "RadioVolumeUp" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioVolumeUp.play(); }, 400);
-        soundsRadioVolumeUp.on('complete', function () {
-           radio.volumeUp();
-           console.log('Turning volume up.');
-           if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "RadioVolumeDown" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsRadioVolumeDown.play(); }, 400);
-        soundsRadioVolumeDown.on('complete', function () {
-           radio.volumeDown();
-           console.log('Turning volume down.');
-           if (radioState === 1) { radio.on(); };
-        });
-      } else if (intent === "Shutdown" && confidence > .5) {
-        if (radioState === 1) { radio.on(); };
-        setTimeout(function () { soundsShutdown.play(); }, 400);
-        soundsShutdown.on('complete', function () {
-          console.log('Shutting down...'); 
-          shutdownNow();
-        });
-      } else if (intent === "WeatherCurrent" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        getWeather('Denver', function (wx) {
-          tts(wx);
-        });
-        setTimeout(function () {
-          if (radioState === 1) { radio.on(); };
-        }, 3000);
-      } else if (intent === "Hello" && confidence > .5) {
-        if (radioState === 1) { radio.off(); };
-        setTimeout(function () { soundsHello.play(); }, 400);
-        soundsHello.on('complete', function () {
-          if (radioState === 1) { radio.on(); };
-          console.log('Hello');
-        });
-      } else {
-        console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
-        new Sound('sounds/custom/i-dont-understand.wav').play();
+      if (intent === "Hello" && confidence > .5) {
+        audio.play('sounds/custom/hello.wav');
       }
+      if (intent === "Trucks" && confidence > .5) {
+        audio.play('sounds/custom/monster-trucks.wav');
+      }
+      // if (intent === "Radio" && confidence > .5) {
+      //   if (res.outcomes[0].entities && res.outcomes[0].entities.length > 0) {
+      //     if (res.outcomes[0].entities.on_off[0].value === 'on') { radio.on(); radioState = 1; console.log('Radio On.') }
+      //     if (res.outcomes[0].entities.on_off[0].value === 'off') { radio.off(); radioState = 0; console.log('Radio Off.') }
+      //   } else { 
+      //     radio.toggle();
+      //     radioState === 1 ? radioState = 0 : radioState = 1; 
+      //     console.log('Radio Toggle.');
+      //   }
+      // } else if (intent === "OpenAir" && confidence > .5) {
+      //   if (radioState === 1) { radio.off(); };
+      //   setTimeout(function () { soundsRadioOpenair.play(); }, 400);
+      //   soundsRadioOpenair.on('complete', function () {
+      //     radio.station(2);
+      //     radioState = 1;
+      //     console.log('Radio play OpenAir.');
+      //     if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "NPR" && confidence > .5) {
+      //   if (radioState === 1) { radio.off(); };
+      //   setTimeout(function () { soundsRadioNPR.play(); }, 400);
+      //   soundsRadioNPR.on('complete', function () {
+      //      radio.station(1);
+      //      radioState = 1
+      //      console.log('Radio play NPR.');
+      //      if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "WWOZ" && confidence > .5) {
+      //   if (radioState === 1) { radio.on(); };
+      //   setTimeout(function () { soundsRadioWWOZ.play(); }, 400);
+      //   soundsRadioWWOZ.on('complete', function () {
+      //      radio.station(4);
+      //      radioState = 1;
+      //      console.log('Radio play WWOZ.');
+      //      if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "RadioNext" && confidence > .5) {
+      //   if (radioState === 1) { radio.on(); };
+      //   setTimeout(function () { soundsRadioNext.play(); }, 400);
+      //   soundsRadioNext.on('complete', function () {
+      //      radio.next();
+      //      radioState = 1;
+      //      console.log('Radio play next station.');
+      //      if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "RadioPrev" && confidence > .5) {
+      //   if (radioState === 1) { radio.on(); };
+      //   setTimeout(function () { soundsRadioPrev.play(); }, 400);
+      //   soundsRadioPrev.on('complete', function () {
+      //      radio.prev();
+      //      radioState = 1
+      //      console.log('Radio play previous station.');
+      //      if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "RadioVolumeUp" && confidence > .5) {
+      //   if (radioState === 1) { radio.on(); };
+      //   setTimeout(function () { soundsRadioVolumeUp.play(); }, 400);
+      //   soundsRadioVolumeUp.on('complete', function () {
+      //      radio.volumeUp();
+      //      console.log('Turning volume up.');
+      //      if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "RadioVolumeDown" && confidence > .5) {
+      //   if (radioState === 1) { radio.on(); };
+      //   setTimeout(function () { soundsRadioVolumeDown.play(); }, 400);
+      //   soundsRadioVolumeDown.on('complete', function () {
+      //      radio.volumeDown();
+      //      console.log('Turning volume down.');
+      //      if (radioState === 1) { radio.on(); };
+      //   });
+      // } else if (intent === "Shutdown" && confidence > .5) {
+      //   if (radioState === 1) { radio.on(); };
+      //   setTimeout(function () { soundsShutdown.play(); }, 400);
+      //   soundsShutdown.on('complete', function () {
+      //     console.log('Shutting down...'); 
+      //     shutdownNow();
+      //   });
+      // } else if (intent === "WeatherCurrent" && confidence > .5) {
+      //   if (radioState === 1) { radio.off(); };
+      //   getWeather('Denver', function (wx) {
+      //     tts(wx);
+      //   });
+      //   setTimeout(function () {
+      //     if (radioState === 1) { radio.on(); };
+      //   }, 3000);
+      // } else if (intent === "Hello" && confidence > .5) {
+      //   if (radioState === 1) { radio.off(); };
+      //   setTimeout(function () { soundsHello.play(); }, 400);
+      //   soundsHello.on('complete', function () {
+      //     if (radioState === 1) { radio.on(); };
+      //     console.log('Hello');
+      //   });
+      // } else {
+      //   console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
+      //   new Sound('sounds/custom/i-dont-understand.wav').play();
+      // }
     } else {
-      new Sound('sounds/custom/i-dont-understand.wav').play();
+      audio.play('sounds/custom/i-dont-understand.wav');
       console.log('I\'m not sure I understand.');
       reset();
     }
@@ -154,21 +180,17 @@ var getIntent = function () {
 
 var recordAudio = function () {
   if (radioState === 1) { radio.off(); };
-  new Sound('sounds/custom/what-can-i-do.wav').play();
+  audio.play('sounds/custom/what-can-i-do.wav');
   setTimeout(function () {
     console.log('Start recording...');
     leds.on(1,1,0);
-    new Sound('sounds/boopG.wav').play();
-    exec('arecord -D plughw:1 --duration=3 -f cd sample.wav', function(error, stdout, stderr) {
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-    });
+    audio.play('sounds/boopG.wav');
+    audio.rec('0:03');
   }, 1300);
   setTimeout(function () {
     console.log('Recording complete.');
     leds.off();
-    new Sound('sounds/boopC.wav').play();
+    audio.play('sounds/boopC.wav');
     setTimeout(function () {
       if (radioState === 1) { radio.on(); };
       getIntent();
@@ -229,15 +251,12 @@ var reset = function () {
 
 var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
-  //console.log(logState);
-  var searchDuration = 10;
-  var minLockDist = 5;
-  var maxLockDist = 30;
+  // console.log(logState);
   if (senses.distance >= minLockDist && senses.distance <= maxLockDist) {
     searching = searching + 1;
   }
   if (searching > 0 && searching < searchDuration && locked === 0) {
-    // console.log('Locking... ' + searching);
+    console.log('Locking... ' + searching);
     leds.on(0,0,1);
   }
   if (searching > 0 && searching < searchDuration && senses.distance > maxLockDist) {
@@ -269,16 +288,36 @@ radio.volume(90);
 radio.off();
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
-sp.on('open', function () {
-  console.log('Serial connection started.');
-  sp.on('data', function(data) {
-    if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
-      senses = JSON.parse(data);
-    };
-    checkSerial();
-    states();
+if (process.env.NODE_ENV !== 'development') {
+  sp.on('open', function () {
+    console.log('Serial connection started.');
+    sp.on('data', function(data) {
+      if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
+        senses = JSON.parse(data);
+      };
+      checkSerial();
+      states();
+    });
   });
-});
+} else {
+  setInterval(states, 300);
+}
+
+// DEV // listen for the "keypress" event
+if (process.env.NODE_ENV === 'development') {
+  process.stdin.on('keypress', function (ch, key) {
+    if (key && key.ctrl && key.name == 'c') {
+      process.exit();
+    }
+    if (key && key.name === 'l') {
+      locked = 1;
+      console.log('Keypress = ');
+    }
+  });
+}
+
+process.stdin.setRawMode(true);
+process.stdin.resume();
 
 // EXIT
 var exit = function () {
