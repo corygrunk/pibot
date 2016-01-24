@@ -7,7 +7,7 @@ var child;
 var audio = require('./lib/sox-play');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
-var sox = require('sox');
+var record = require('node-record-lpcm16');
 var Sound = require('node-aplay');
 var wit = require('node-wit');
 var weather = require('weather-js');
@@ -35,7 +35,6 @@ if (process.env.NODE_ENV === 'development') {
   senses = { motion: 0, distance: 141 }
 }
 
-
 var searchDuration = 10;
 var minLockDist = 5;
 var maxLockDist = 30;
@@ -45,8 +44,11 @@ var searching = 0;
 var locked = 0;
 var recording = 0;
 var serialState = 0;
-var radioState = 0;
 
+// INTENTS
+var intents = require('./intents/intents');
+
+// NEED TO CLEAN UP
 var soundsHello = new Sound('sounds/custom/hello.wav');
 var soundsShutdown = new Sound('sounds/custom/goodbye.wav');
 var soundsRadioOpenair = new Sound('sounds/custom/radio-openair.wav');
@@ -57,119 +59,23 @@ var soundsRadioPrev = new Sound('sounds/boop.wav');
 var soundsRadioVolumeUp = new Sound('sounds/boop.wav');
 var soundsRadioVolumeDown = new Sound('sounds/boop.wav');
 
-var getIntent = function () {
+var getAudioIntent = function () {
   console.log("Sending audio to Wit...");
   var stream = fs.createReadStream('sample.wav');
   wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
     if (err) console.log("Error: ", err);
     if (res && res.outcomes && res.outcomes.length > 0) {
-      var intent = res.outcomes[0].intent;
-      var confidence = res.outcomes[0].confidence;
       console.log(res);
+      var witIntent = res.outcomes[0].intent;
+      var witConfidence = res.outcomes[0].confidence;
+      var witEntities = '';
+      console.log(res.outcomes[0].entities);
+      if (res.outcomes[0].entities) {
+        witEntities = res.outcomes[0].entities;
+      }
       leds.blink(0,0,1);
       reset();
-      if (intent === "Hello" && confidence > .5) {
-        audio.play('sounds/custom/hello.wav');
-      }
-      if (intent === "Trucks" && confidence > .5) {
-        audio.play('sounds/custom/monster-trucks.wav');
-      }
-      // if (intent === "Radio" && confidence > .5) {
-      //   if (res.outcomes[0].entities && res.outcomes[0].entities.length > 0) {
-      //     if (res.outcomes[0].entities.on_off[0].value === 'on') { radio.on(); radioState = 1; console.log('Radio On.') }
-      //     if (res.outcomes[0].entities.on_off[0].value === 'off') { radio.off(); radioState = 0; console.log('Radio Off.') }
-      //   } else { 
-      //     radio.toggle();
-      //     radioState === 1 ? radioState = 0 : radioState = 1; 
-      //     console.log('Radio Toggle.');
-      //   }
-      // } else if (intent === "OpenAir" && confidence > .5) {
-      //   if (radioState === 1) { radio.off(); };
-      //   setTimeout(function () { soundsRadioOpenair.play(); }, 400);
-      //   soundsRadioOpenair.on('complete', function () {
-      //     radio.station(2);
-      //     radioState = 1;
-      //     console.log('Radio play OpenAir.');
-      //     if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "NPR" && confidence > .5) {
-      //   if (radioState === 1) { radio.off(); };
-      //   setTimeout(function () { soundsRadioNPR.play(); }, 400);
-      //   soundsRadioNPR.on('complete', function () {
-      //      radio.station(1);
-      //      radioState = 1
-      //      console.log('Radio play NPR.');
-      //      if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "WWOZ" && confidence > .5) {
-      //   if (radioState === 1) { radio.on(); };
-      //   setTimeout(function () { soundsRadioWWOZ.play(); }, 400);
-      //   soundsRadioWWOZ.on('complete', function () {
-      //      radio.station(4);
-      //      radioState = 1;
-      //      console.log('Radio play WWOZ.');
-      //      if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "RadioNext" && confidence > .5) {
-      //   if (radioState === 1) { radio.on(); };
-      //   setTimeout(function () { soundsRadioNext.play(); }, 400);
-      //   soundsRadioNext.on('complete', function () {
-      //      radio.next();
-      //      radioState = 1;
-      //      console.log('Radio play next station.');
-      //      if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "RadioPrev" && confidence > .5) {
-      //   if (radioState === 1) { radio.on(); };
-      //   setTimeout(function () { soundsRadioPrev.play(); }, 400);
-      //   soundsRadioPrev.on('complete', function () {
-      //      radio.prev();
-      //      radioState = 1
-      //      console.log('Radio play previous station.');
-      //      if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "RadioVolumeUp" && confidence > .5) {
-      //   if (radioState === 1) { radio.on(); };
-      //   setTimeout(function () { soundsRadioVolumeUp.play(); }, 400);
-      //   soundsRadioVolumeUp.on('complete', function () {
-      //      radio.volumeUp();
-      //      console.log('Turning volume up.');
-      //      if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "RadioVolumeDown" && confidence > .5) {
-      //   if (radioState === 1) { radio.on(); };
-      //   setTimeout(function () { soundsRadioVolumeDown.play(); }, 400);
-      //   soundsRadioVolumeDown.on('complete', function () {
-      //      radio.volumeDown();
-      //      console.log('Turning volume down.');
-      //      if (radioState === 1) { radio.on(); };
-      //   });
-      // } else if (intent === "Shutdown" && confidence > .5) {
-      //   if (radioState === 1) { radio.on(); };
-      //   setTimeout(function () { soundsShutdown.play(); }, 400);
-      //   soundsShutdown.on('complete', function () {
-      //     console.log('Shutting down...'); 
-      //     shutdownNow();
-      //   });
-      // } else if (intent === "WeatherCurrent" && confidence > .5) {
-      //   if (radioState === 1) { radio.off(); };
-      //   getWeather('Denver', function (wx) {
-      //     tts(wx);
-      //   });
-      //   setTimeout(function () {
-      //     if (radioState === 1) { radio.on(); };
-      //   }, 3000);
-      // } else if (intent === "Hello" && confidence > .5) {
-      //   if (radioState === 1) { radio.off(); };
-      //   setTimeout(function () { soundsHello.play(); }, 400);
-      //   soundsHello.on('complete', function () {
-      //     if (radioState === 1) { radio.on(); };
-      //     console.log('Hello');
-      //   });
-      // } else {
-      //   console.log('I\'m not sure what you said. Did you mean: ' + intent + ' (' + confidence + ')');
-      //   new Sound('sounds/custom/i-dont-understand.wav').play();
-      // }
+      intents.query(witIntent,witConfidence,witEntities);
     } else {
       audio.play('sounds/custom/i-dont-understand.wav');
       console.log('I\'m not sure I understand.');
@@ -178,34 +84,48 @@ var getIntent = function () {
   });
 }
 
+getAudioIntent();
+
 var recordAudio = function () {
-  if (radioState === 1) { radio.off(); };
+  var file = fs.createWriteStream('sample.wav', { encoding: 'binary' });
+  if (radio.radioState === 1) { radio.off(); };
   audio.play('sounds/custom/what-can-i-do.wav');
   setTimeout(function () {
     console.log('Start recording...');
     leds.on(1,1,0);
     audio.play('sounds/boopG.wav');
-    audio.rec('0:03');
+    record.start();
   }, 1300);
   setTimeout(function () {
     console.log('Recording complete.');
+    record.stop().pipe(file);
     leds.off();
     audio.play('sounds/boopC.wav');
     setTimeout(function () {
-      if (radioState === 1) { radio.on(); };
-      getIntent();
+      if (radio.radioState === 1) { radio.on(); };
+      getAudioIntent();
     }, 300);
   }, 4300);
 }
 
 var tts = function (text) {
-  exec('pico2wave -w temp.wav \'' + text + '\'', function(error, stdout, stderr) {
-    if (error !== null) {
-      console.log('exec error: ' + error);
-    }
-    new Sound('temp.wav').play();
-  });
+  if (process.env.NODE_ENV === 'development') {
+    exec('say \'' + text + '\'', function(error, stdout, stderr) {
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+    });
+  } else {
+    exec('pico2wave -w temp.wav \'' + text + '\'', function(error, stdout, stderr) {
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+      new Sound('temp.wav').play();
+    });
+  }
 }
+
+
 
 var getWeather = function (location, callback) {
   weather.find({search: location, degreeType: 'F'}, function(err, result) {
