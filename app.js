@@ -119,7 +119,7 @@ var tts = function (text) {
       if (error !== null) {
         console.log('exec error: ' + error);
       }
-      new Sound('temp.wav').play();
+      audio.play('temp.wav');
     });
   }
 }
@@ -141,7 +141,7 @@ var checkSerial = function () {
     setTimeout(function () {
       console.log('Activated.');
       leds.blink(0,1,0);
-      new Sound('sounds/custom/online.wav').play();
+      audio.play('sounds/custom/online.wav');
     }, 5000);
   }
 }
