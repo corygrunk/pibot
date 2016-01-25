@@ -101,7 +101,9 @@ var recordAudio = function (callback) {
   }, 1300);
   setTimeout(function () {
     console.log('Recording complete.');
-    record.stop().pipe(file);
+    if (process.env.NODE_ENV === 'development') {
+      record.stop().pipe(file);
+    }
     leds.off();
     audio.play('sounds/boopC.wav');
     setTimeout(function () {
