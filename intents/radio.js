@@ -9,24 +9,24 @@ var sounds = [
 
 var randomSound = sounds[Math.floor(Math.random() * sounds.length)];
 
-var radioState = 0;
-
 var intent = function (witIntents, witEntities) {
 	console.log();
-	var entities = witEntities.on_off[0].value;
 	if (witIntents === intentName) {
-  	if (entities === 'on') {
-			radio.on();
-			radioState = 1;
-			console.log('Radio On.');
-  	} else if (entities === 'off') {
-			radio.off(); 
-			radioState = 0;
-			console.log('Radio Off.');
-  	} else {
+		if (witEntities.on_off && witEntities.on_off > 0) {
+			var entities = witEntities.on_off[0].value;
+			if (entities === 'on') {
+				radio.on();
+				radio.state = 1;
+				console.log('Radio On (state: ' + radio.state + ')');
+	  	} else if (entities === 'off') {
+				radio.off(); 
+				radio.state = 0;
+				console.log('Radio Off (state: ' + radio.state + ')');
+	  	}
+		} else {
   		radio.toggle();
-  		radioState === 1 ? radioState = 0 : radioState = 1; 
-  		console.log('Radio Toggle.');
+  		radio.state === 1 ? radio.state = 0 : radio.state = 1; 
+  		console.log('Radio Toggle (state: ' + radio.state + ')');
   	}
   }
 }

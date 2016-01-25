@@ -8,7 +8,6 @@ var audio = require('./lib/sox-play');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
 var record = require('node-record-lpcm16');
-var Sound = require('node-aplay');
 var wit = require('node-wit');
 var weather = require('weather-js');
 var fs = require('fs');
@@ -48,20 +47,22 @@ var serialState = 0;
 // INTENTS
 var intents = require('./intents/intents');
 
-// NEED TO CLEAN UP
-var soundsHello = new Sound('sounds/custom/hello.wav');
-var soundsShutdown = new Sound('sounds/custom/goodbye.wav');
-var soundsRadioOpenair = new Sound('sounds/custom/radio-openair.wav');
-var soundsRadioNPR = new Sound('sounds/custom/radio-npr.wav');
-var soundsRadioWWOZ = new Sound('sounds/custom/radio-wwoz.wav');
-var soundsRadioNext = new Sound('sounds/boop.wav');
-var soundsRadioPrev = new Sound('sounds/boop.wav');
-var soundsRadioVolumeUp = new Sound('sounds/boop.wav');
-var soundsRadioVolumeDown = new Sound('sounds/boop.wav');
+var voiceCommand = function () {
+  // RECORD AUDIO
+  // SEND TO WIT
+  // GET RESPONSE
+  // SWITCH TO INTENT STATE
+  // WHEN COMPLETE, RESET
+}
 
-var getAudioIntent = function () {
-  console.log("Sending audio to Wit...");
-  var stream = fs.createReadStream('sample.wav');
+var globalIntentSounds = {}
+globalIntentSounds.voiceCommand = [
+  'sounds/custom/what-can-i-do.wav'
+];
+
+var getAudioIntent = function (audioFile) {
+  console.log('Sending "' + audioFile + '" to Wit...');
+  var stream = fs.createReadStream(audioFile);
   wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
     if (err) console.log("Error: ", err);
     if (res && res.outcomes && res.outcomes.length > 0) {
@@ -84,12 +85,10 @@ var getAudioIntent = function () {
   });
 }
 
-getAudioIntent();
-
-var recordAudio = function () {
+var recordAudio = function (callback) {
   var file = fs.createWriteStream('sample.wav', { encoding: 'binary' });
   if (radio.radioState === 1) { radio.off(); };
-  audio.play('sounds/custom/what-can-i-do.wav');
+  audio.play(globalIntentSounds.voiceCommand[0]);
   setTimeout(function () {
     console.log('Start recording...');
     leds.on(1,1,0);
@@ -103,7 +102,7 @@ var recordAudio = function () {
     audio.play('sounds/boopC.wav');
     setTimeout(function () {
       if (radio.radioState === 1) { radio.on(); };
-      getAudioIntent();
+      callback('sample.wav');
     }, 300);
   }, 4300);
 }
@@ -124,8 +123,6 @@ var tts = function (text) {
     });
   }
 }
-
-
 
 var getWeather = function (location, callback) {
   weather.find({search: location, degreeType: 'F'}, function(err, result) {
@@ -165,7 +162,6 @@ var reset = function () {
   searching = 0;
   locked = 0;
   shutdown = 0;
-  leds.off();
   // console.log('Reset');
 }
 
@@ -189,10 +185,9 @@ var statesInterval = function () {
     locked = 1;
   }
   if (locked === 1) {
-    // console.log('LOCKED');
     leds.on(0,1,0);
     locked = 2;
-    recordAudio();
+    recordAudio(getAudioIntent);
   }
 }
 
@@ -201,12 +196,11 @@ var states = function () {
 }
 
 // INIT
-console.log("Starting up...");
+console.log("/////// INIT Routine Begin.");
 leds.off();
 radio.repeat();
 radio.volume(90);
 radio.off();
-
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 if (process.env.NODE_ENV !== 'development') {
   sp.on('open', function () {
@@ -222,8 +216,7 @@ if (process.env.NODE_ENV !== 'development') {
 } else {
   setInterval(states, 300);
 }
-
-// DEV // listen for the "keypress" event
+// DEV MODE // listen for the "keypress" event
 if (process.env.NODE_ENV === 'development') {
   process.stdin.on('keypress', function (ch, key) {
     if (key && key.ctrl && key.name == 'c') {
@@ -237,6 +230,7 @@ if (process.env.NODE_ENV === 'development') {
   process.stdin.setRawMode(true);
   process.stdin.resume();
 }
+console.log("/////// INIT Routine Complete.");
 
 // EXIT
 var exit = function () {
