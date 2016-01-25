@@ -9,7 +9,6 @@ var leds = require('./lib/leds');
 var radio = require('./lib/radio');
 var record = require('node-record-lpcm16');
 var wit = require('node-wit');
-var weather = require('weather-js');
 var fs = require('fs');
 
 // DEV REQUIRE
@@ -113,34 +112,6 @@ var recordAudio = function (callback) {
   }, 4300);
 }
 
-var tts = function (text) {
-  if (process.env.NODE_ENV === 'development') {
-    exec('say \'' + text + '\'', function(error, stdout, stderr) {
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-    });
-  } else {
-    exec('pico2wave -w temp.wav \'' + text + '\'', function(error, stdout, stderr) {
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-      audio.play('temp.wav');
-    });
-  }
-}
-
-var getWeather = function (location, callback) {
-  weather.find({search: location, degreeType: 'F'}, function(err, result) {
-    if(err) console.log(err);
-    if (result && result.length > 0) {
-      var currentTemp = result[0].current.temperature;
-      var currentCond = result[0].current.skytext;
-      callback('It is currently ' + currentCond + ' and ' + currentTemp + ' degrees.');
-    }
-  });
-}
-
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
@@ -150,17 +121,6 @@ var checkSerial = function () {
       audio.play('sounds/custom/online.wav');
     }, 5000);
   }
-}
-
-var shutdownNow = function () {
-  leds.off();
-  setTimeout(function () {
-    exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-    });
-  }, 3000);
 }
 
 var reset = function () {
@@ -230,7 +190,7 @@ if (process.env.NODE_ENV === 'development') {
     }
     if (key && key.name === 'l') {
       locked = 1;
-      console.log('Keypress = ');
+      console.log('Keypress');
     }
   });
   process.stdin.setRawMode(true);
