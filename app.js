@@ -7,6 +7,8 @@ var child;
 var audio = require('./lib/sox-play');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
+var intents = require('./intents/intents');
+var passive = require('./passive/passive');
 var record = require('node-record-lpcm16');
 var wit = require('node-wit');
 var fs = require('fs');
@@ -37,22 +39,15 @@ var searchDuration = 10;
 var minLockDist = 5;
 var maxLockDist = 30;
 
+var presence = 0;
+var presenceCount = 0;
+var presenceTresh = 4;
+
 var waiting = 0;
 var searching = 0;
 var locked = 0;
 var recording = 0;
 var serialState = 0;
-
-// INTENTS
-var intents = require('./intents/intents');
-
-var voiceCommand = function () {
-  // RECORD AUDIO
-  // SEND TO WIT
-  // GET RESPONSE
-  // SWITCH TO INTENT STATE
-  // WHEN COMPLETE, RESET
-}
 
 var globalIntentSounds = {}
 globalIntentSounds.voiceCommand = [
@@ -131,9 +126,47 @@ var reset = function () {
   // console.log('Reset');
 }
 
+// RULES FOR PRESENCE:
+// MOTION DETECTED WITHIN THE PAST 60 SECONDS
+// IF NO MOTION FOR 60 SEC PRESENCE = 0;
+var presenceCounter = function () {
+  if (senses.motion === 1) {
+    presence = presence + 1;
+    if (presence === 1) {
+      // WELCOME MESSAGE
+      passive.welcome();
+    } 
+    presenceCount = presenceCount + 1;
+    //console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Motion: ' + senses.motion);
+  };
+}
+
+// DETECT IF THERE'S ANY MOTION DURING A SET INTERVAL
+var presenceDetect = function (intervalSeconds) {
+  setInterval(function () {
+    if (presenceCount > 0) {
+      console.log('I sense a presence.');
+      presence = 1;
+    } else {
+      console.log('No one is here. I\'m lonely');
+      presence = 0;
+    }
+    presenceCount = 0;
+  }, intervalSeconds * 1000)
+}
+presenceDetect(presenceTresh);
+
+if (presence === 1) {
+  passive.welcome();
+};
+
+var states = function () {
+  setTimeout(statesInterval, 1000);
+}
+
 var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
-  // console.log(logState);
+  //console.log(logState);
   if (senses.distance >= minLockDist && senses.distance <= maxLockDist) {
     searching = searching + 1;
   }
@@ -155,10 +188,7 @@ var statesInterval = function () {
     locked = 2;
     recordAudio(getAudioIntent);
   }
-}
-
-var states = function () {
-  setTimeout(statesInterval, 1000);
+  presenceCounter();
 }
 
 // INIT
@@ -188,8 +218,12 @@ if (process.env.NODE_ENV === 'development') {
     if (key && key.ctrl && key.name == 'c') {
       process.exit();
     }
-    if (key && key.name === 'l') {
+    if (key && key.name === 'd') {
       locked = 1;
+      console.log('Keypress');
+    }
+    if (key && key.name === 'm') {
+      senses.motion === 1 ? senses.motion = 0 : senses.motion = 1;
       console.log('Keypress');
     }
   });
