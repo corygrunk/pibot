@@ -12,6 +12,8 @@ var passive = require('./passive/passive');
 var record = require('node-record-lpcm16');
 var wit = require('node-wit');
 var fs = require('fs');
+var ip = require('./lib/ip');
+var http = require('http');
 
 
 // DEV REQUIRE
@@ -147,10 +149,10 @@ var presenceCounter = function () {
 var presenceDetect = function (intervalSeconds) {
   setInterval(function () {
     if (presenceCount > 0) {
-      console.log('I still sense a presence.');
+      //console.log('I still sense a presence.');
       presence = 1;
     } else {
-      console.log('No one is here. I\'m lonely');
+      //console.log('No one is here. I\'m lonely');
       presence = 0;
     }
     presenceCount = 0;
@@ -194,11 +196,41 @@ var statesInterval = function () {
 }
 
 // INIT
-console.log("/////// INIT Routine Begin.");
+console.log("/////// INIT");
 leds.off();
 radio.repeat();
 radio.volume(90);
 radio.off();
+ip.say();
+
+// WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
+// var server = http.createServer( function(req, res) {
+//   console.dir(req.param);
+//   if (req.method == 'POST') {
+//     console.log("POST");
+//     var body = '';
+//     req.on('data', function (data) {
+//       body += data;
+//       console.log("Partial body: " + body);
+//     });
+//     req.on('end', function () {
+//         console.log("Body: " + body);
+//     });
+//     res.writeHead(200, {'Content-Type': 'text/html'});
+//     res.end('post received');
+//   } else {
+//     console.log("GET");
+//     var html = '<html><body><form method="post" action="http://localhost:5000">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body></html> ';
+//     //var html = fs.readFileSync('index.html');
+//     res.writeHead(200, {'Content-Type': 'text/html'});
+//     res.end(html);
+//   }
+// });
+// port = 5000;
+// host = '127.0.0.1';
+// server.listen(port, host);
+// console.log('Listening at http://' + host + ':' + port);
+
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 if (process.env.NODE_ENV !== 'development') {
   sp.on('open', function () {
@@ -232,7 +264,7 @@ if (process.env.NODE_ENV === 'development') {
   process.stdin.setRawMode(true);
   process.stdin.resume();
 }
-console.log("/////// INIT Routine Complete.");
+
 
 // EXIT
 var exit = function () {
