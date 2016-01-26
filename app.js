@@ -5,6 +5,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var audio = require('./lib/sox-play');
+var tts = require('./lib/tts');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
 var intents = require('./intents/intents');
@@ -14,6 +15,7 @@ var wit = require('node-wit');
 var fs = require('fs');
 var ip = require('./lib/ip');
 var http = require('http');
+var request = require('request');
 
 
 // DEV REQUIRE
@@ -201,37 +203,58 @@ leds.off();
 radio.repeat();
 radio.volume(90);
 radio.off();
-ip.say();
+process.env.NODE_ENV === 'development' ? ip.print() : ip.say();
 
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
 // http://stackoverflow.com/questions/12006417/nodejs-server-that-accepts-post-requests
 //
-// var server = http.createServer( function(req, res) {
-//   console.dir(req.param);
-//   if (req.method == 'POST') {
-//     console.log("POST");
-//     var body = '';
-//     req.on('data', function (data) {
-//       body += data;
-//       console.log("Partial body: " + body);
-//     });
-//     req.on('end', function () {
-//         console.log("Body: " + body);
-//     });
-//     res.writeHead(200, {'Content-Type': 'text/html'});
-//     res.end('post received');
-//   } else {
-//     console.log("GET");
-//     var html = '<html><body><form method="post" action="http://localhost:5000">Name: <input type="text" name="name" /><input type="submit" value="Submit" /></form></body></html> ';
-//     //var html = fs.readFileSync('index.html');
-//     res.writeHead(200, {'Content-Type': 'text/html'});
-//     res.end(html);
-//   }
-// });
-// port = 5000;
-// host = '127.0.0.1';
-// server.listen(port, host);
-// console.log('Listening at http://' + host + ':' + port);
+var config = {}
+config.server = {
+  "port": 5000,
+  "host": "127.0.0.1",
+}
+console.log(config.server.port);
+var server = http.createServer( function(req, res) {
+  if (req.method == 'POST') {
+    console.log("POST");
+    var body = '';
+    req.on('data', function (data) {
+      body += data;
+      //console.log("Partial body: " + body);
+    });
+    req.on('end', function () {
+      console.log("Body: " + body);
+      tts.say('I have recieved a notification. ' + body);
+    });
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end('POST received.');
+  }
+});
+port = config.server.port;
+host = config.server.host;
+server.listen(port, host);
+console.log('Listening at http://' + host + ':' + port);
+
+
+// TEST NOTIFICATION 
+var testNotify = function (notifyBody) {
+  request({
+      url: 'http://' + host + ':' + port,
+      method: 'POST',
+      headers: {
+          'Content-Type': 'MyContentType',
+          'Custom-Header': 'Custom Value'
+      },
+      body: notifyBody
+  }, function(error, response, body){
+      if(error) {
+          console.log(error);
+      } else {
+          console.log(response.statusCode, body);
+      }
+  });
+  }
+
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 if (process.env.NODE_ENV !== 'development') {
@@ -260,6 +283,10 @@ if (process.env.NODE_ENV === 'development') {
     }
     if (key && key.name === 'm') {
       senses.motion === 1 ? senses.motion = 0 : senses.motion = 1;
+      console.log('Keypress');
+    }
+    if (key && key.name === 'p') {
+      testNotify('This is a test notification');
       console.log('Keypress');
     }
   });

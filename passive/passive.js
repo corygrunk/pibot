@@ -1,4 +1,5 @@
 var tts = require('../lib/tts');
+var wx = require('../lib/weather');
 
 var welcome = function () {
 	var welcomeMessages = [
@@ -7,10 +8,15 @@ var welcome = function () {
 	  'Good day'
 	];
 	var randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+
   tts.say(randomMessage);
   setTimeout(function () {
   	console.log(randomMessage);
-  }, 500);
+      wx.current('Denver', function (wx) {
+        console.log(wx);
+        tts.say(wx);
+      });
+  }, 1000);
 }
 
 module.exports.welcome = welcome;
