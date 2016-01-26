@@ -13,6 +13,7 @@ var record = require('node-record-lpcm16');
 var wit = require('node-wit');
 var fs = require('fs');
 
+
 // DEV REQUIRE
 if (process.env.NODE_ENV === 'development') {
   var keypress = require('keypress');
@@ -135,6 +136,7 @@ var presenceCounter = function () {
     if (presence === 1) {
       // WELCOME MESSAGE
       passive.welcome();
+      console.log('I sense a presence.');
     } 
     presenceCount = presenceCount + 1;
     //console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Motion: ' + senses.motion);
@@ -145,7 +147,7 @@ var presenceCounter = function () {
 var presenceDetect = function (intervalSeconds) {
   setInterval(function () {
     if (presenceCount > 0) {
-      console.log('I sense a presence.');
+      console.log('I still sense a presence.');
       presence = 1;
     } else {
       console.log('No one is here. I\'m lonely');
