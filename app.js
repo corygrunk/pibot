@@ -204,6 +204,8 @@ radio.off();
 ip.say();
 
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
+// http://stackoverflow.com/questions/12006417/nodejs-server-that-accepts-post-requests
+//
 // var server = http.createServer( function(req, res) {
 //   console.dir(req.param);
 //   if (req.method == 'POST') {
