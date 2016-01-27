@@ -2,6 +2,7 @@ var tts = require('../lib/tts');
 var wx = require('../lib/weather');
 var rec = require('../lib/record');
 var wit = require('../lib/wit');
+var nyt = require('../lib/nytimes');
 
 var welcome = function () {
 	var welcomeMessages = [
@@ -27,8 +28,15 @@ var welcome = function () {
     rec.quiet(function (file) {
       wit.audio(file, function (data) {
         if (data && data === 'Yes') {
-          tts.say('Fetching headlines.');
-          console.log('Fetching headlines.');
+          nyt.headlines(function (abstracts) {
+            console.log(abstracts);
+            var speak = 'Latest Headlines. ';
+            for (var i = abstracts.length - 1; i >= 0; i--) {
+              abstracts[i];
+              i > 0 ? speak = speak + abstracts[i] + ' Next story. ' : speak = speak + abstracts[i];
+            };
+            tts.say(speak);
+          });
         } else if (data && data === 'No') {
           tts.say('Ok. Maybe later.');
           console.log('Ok. Maybe later.');
