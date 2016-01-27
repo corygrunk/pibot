@@ -92,11 +92,9 @@ var recordAudio = function (callback) {
     console.log('Start recording...');
     leds.on(1,1,0);
     audio.play('sounds/boopG.wav');
-    if (process.env.NODE_ENV === 'development') {
-      record.start();
-    } else {
-      audio.rec('sample.wav', 3);
-    }
+    setTimeout(function () {
+      process.env.NODE_ENV === 'development' ? record.start() : audio.rec('sample.wav', 3);
+    }, 250);
   }, 1300);
   setTimeout(function () {
     console.log('Recording complete.');
