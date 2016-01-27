@@ -1,5 +1,7 @@
 var tts = require('../lib/tts');
 var wx = require('../lib/weather');
+var rec = require('../lib/record');
+var wit = require('../lib/wit');
 
 var welcome = function () {
 	var welcomeMessages = [
@@ -17,6 +19,26 @@ var welcome = function () {
         tts.say(wx);
       });
   }, 1000);
+  setTimeout(function () {
+    tts.say('Would you like to hear todays headlines');
+    console.log('Would you like to hear todays headlines');
+  }, 5500);
+  setTimeout(function () {
+    rec.quiet(function (file) {
+      wit.audio(file, function (data) {
+        if (data && data === 'Yes') {
+          tts.say('Fetching headlines.');
+          console.log('Fetching headlines.');
+        } else if (data && data === 'No') {
+          tts.say('Ok. Maybe later.');
+          console.log('Ok. Maybe later.');
+        } else {
+          tts.say('Sorry. I do not understand.');
+          console.log('Sorry. I do not understand.');
+        }
+      });
+    });
+  }, 8000);
 }
 
 module.exports.welcome = welcome;

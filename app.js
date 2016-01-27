@@ -4,19 +4,16 @@ var dotenv = require('dotenv');
 var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
-var audio = require('./lib/sox-play');
+var wit = require('./lib/wit');
+var rec = require('./lib/record');
 var tts = require('./lib/tts');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
-var intents = require('./intents/intents');
 var passive = require('./passive/passive');
-var record = require('node-record-lpcm16');
-var wit = require('node-wit');
 var fs = require('fs');
 var ip = require('./lib/ip');
 var http = require('http');
 var request = require('request');
-
 
 // DEV REQUIRE
 if (process.env.NODE_ENV === 'development') {
@@ -33,7 +30,6 @@ if (process.env.NODE_ENV !== 'development') {
     parser: serialport.parsers.readline("\n")
   });
 }
-var ACCESS_TOKEN = process.env.WIT_AI_TOKEN || null;
 
 var senses = {}; // SENSOR OBJECT - senses.distance & senses.motion
 if (process.env.NODE_ENV === 'development') {
@@ -58,57 +54,6 @@ var globalIntentSounds = {}
 globalIntentSounds.voiceCommand = [
   'sounds/custom/what-can-i-do.wav'
 ];
-
-var getAudioIntent = function (audioFile) {
-  console.log('Sending "' + audioFile + '" to Wit...');
-  var stream = fs.createReadStream(audioFile);
-  wit.captureSpeechIntent(ACCESS_TOKEN, stream, "audio/wav", function (err, res) {
-    if (err) console.log("Error: ", err);
-    if (res && res.outcomes && res.outcomes.length > 0) {
-      console.log(res);
-      var witIntent = res.outcomes[0].intent;
-      var witConfidence = res.outcomes[0].confidence;
-      var witEntities = '';
-      console.log(res.outcomes[0].entities);
-      if (res.outcomes[0].entities) {
-        witEntities = res.outcomes[0].entities;
-      }
-      leds.blink(0,0,1);
-      reset();
-      intents.query(witIntent,witConfidence,witEntities);
-    } else {
-      audio.play('sounds/custom/i-dont-understand.wav');
-      console.log('I\'m not sure I understand.');
-      reset();
-    }
-  });
-}
-
-var recordAudio = function (callback) {
-  var file = fs.createWriteStream('sample.wav', { encoding: 'binary' });
-  if (radio.radioState === 1) { radio.off(); };
-  audio.play(globalIntentSounds.voiceCommand[0]);
-  setTimeout(function () {
-    console.log('Start recording...');
-    leds.on(1,1,0);
-    audio.play('sounds/boopG.wav');
-    setTimeout(function () {
-      process.env.NODE_ENV === 'development' ? record.start() : audio.rec('sample.wav', 3);
-    }, 250);
-  }, 1300);
-  setTimeout(function () {
-    console.log('Recording complete.');
-    if (process.env.NODE_ENV === 'development') {
-      record.stop().pipe(file);
-    }
-    leds.off();
-    audio.play('sounds/boopC.wav');
-    setTimeout(function () {
-      if (radio.radioState === 1) { radio.on(); };
-      callback('sample.wav');
-    }, 300);
-  }, 4300);
-}
 
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
@@ -190,7 +135,9 @@ var statesInterval = function () {
   if (locked === 1) {
     leds.on(0,1,0);
     locked = 2;
-    recordAudio(getAudioIntent);
+    rec.file(function (file) {
+      wit.audio(file);
+    });
   }
   presenceCounter();
 }
