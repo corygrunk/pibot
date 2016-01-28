@@ -17,18 +17,18 @@ var confidenceThresh = .5;
 var radioState = radio.state; // from intents/radio.js
 
 var query = function (witIntent, witConfidence, witEntities) {
-	if (witConfidence > confidenceThresh) {
-		hello.intent(witIntent,witEntities);
-		radio.intent(witIntent,witEntities);
-		radioStations.intent(witIntent,witEntities);
-		radioVolumeDown.intent(witIntent,witEntities);
-		radioVolumeUp.intent(witIntent,witEntities);
+  if (witConfidence > confidenceThresh) {
+    hello.intent(witIntent,witEntities);
+    radio.intent(witIntent,witEntities);
+    radioStations.intent(witIntent,witEntities);
+    radioVolumeDown.intent(witIntent,witEntities);
+    radioVolumeUp.intent(witIntent,witEntities);
     trucks.intent(witIntent,witEntities);
     shutdown.intent(witIntent,witEntities);
     weather.intent(witIntent,witEntities);
-	} else {
-		lowConfidence.intent();
-	}
+  } else {
+    lowConfidence.intent();
+  }
 }
 
 module.exports.query = query;

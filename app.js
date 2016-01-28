@@ -62,7 +62,6 @@ var checkSerial = function () {
     serialState = 1;
     setTimeout(function () {
       console.log('Activated.');
-      tts.say('Activated.');
       leds.blink(0,1,0);
     }, 5000);
   }
@@ -73,7 +72,7 @@ var reset = function () {
   searching = 0;
   locked = 0;
   shutdown = 0;
-  // console.log('Reset');
+  console.log('Reset');
 }
 
 // RULES FOR PRESENCE:
@@ -82,7 +81,8 @@ var reset = function () {
 var presenceCounter = function () {
   if (senses.motion === 1 && presence === 1) {
     console.log('New presence detected.');
-    passive.welcome();
+    // passive.welcome();
+    console.log('Welcome back.');
     presence = 2;
   }
   if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
@@ -115,7 +115,7 @@ var states = function () {
 
 var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
-  //console.log(logState);
+  // console.log(logState);
   if (senses.distance >= minLockDist && senses.distance <= maxLockDist) {
     searching = searching + 1;
   }
@@ -124,24 +124,29 @@ var statesInterval = function () {
     leds.on(0,0,1);
   }
   if (searching > 0 && searching < searchDuration && senses.distance > maxLockDist) {
+    leds.off();
     reset();
   }
   if (searching > 0 && searching < searchDuration && senses.distance < minLockDist) {
+    leds.off();
     reset();
   }
-  if (searching === searchDuration) {
+  if (searching === searchDuration && locked === 0) {
     locked = 1;
   }
   if (locked === 1) {
     leds.on(0,1,0);
     locked = 2;
-    rec.file(4, function (file) {
-      wit.audioIntent('sample.wav', function (data) {
-        intents.query(data.intent, data.confidence, data.entities);
-      });
-    });
     setTimeout(function () {
-      locked = 0;
+      leds.off();
+      rec.file(4, function (file) {
+        wit.audioIntent('sample.wav', function (data) {
+          intents.query(data.intent, data.confidence, data.entities);
+        });
+      });
+    }, 700);
+    setTimeout(function () {
+      reset();
     }, 6000);
   }
   presenceCounter();
@@ -151,7 +156,7 @@ var statesInterval = function () {
 console.log("/////// INIT");
 leds.off();
 radio.repeat();
-radio.volume(90);
+radio.volume(60);
 radio.off();
 ip.print();
 
