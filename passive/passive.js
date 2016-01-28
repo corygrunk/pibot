@@ -25,7 +25,7 @@ var welcome = function () {
     console.log('Would you like to hear todays headlines');
   }, 5500);
   setTimeout(function () {
-    rec.quiet(function (file) {
+    rec.quiet(1, function (file) {
       wit.audioIntent(file, function (data) {
         console.log(data);
         if (data.intent && data.intent === 'Yes') {
