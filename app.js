@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'development') {
 
 var searchDuration = 10;
 var minLockDist = 5;
-var maxLockDist = 30;
+var maxLockDist = 50;
 
 var presence = 0;
 var presenceCount = 0;
