@@ -43,7 +43,8 @@ var maxLockDist = 30;
 
 var presence = 0;
 var presenceCount = 0;
-var presenceTresh = 4;
+var presenceCountLast = 0;
+var presenceTresh = 120; // Seconds
 
 var waiting = 0;
 var searching = 0;
@@ -61,8 +62,8 @@ var checkSerial = function () {
     serialState = 1;
     setTimeout(function () {
       console.log('Activated.');
+      tts.say('Activated.');
       leds.blink(0,1,0);
-      audio.play('sounds/custom/online.wav');
     }, 5000);
   }
 }
@@ -79,36 +80,34 @@ var reset = function () {
 // MOTION DETECTED WITHIN THE PAST 60 SECONDS
 // IF NO MOTION FOR 60 SEC PRESENCE = 0;
 var presenceCounter = function () {
-  if (senses.motion === 1) {
-    presence = presence + 1;
-    if (presence === 1) {
-      // WELCOME MESSAGE
-      passive.welcome();
-      console.log('I sense a presence.');
-    } 
+  if (senses.motion === 1 && presence === 1) {
+    console.log('New presence detected.');
+    passive.welcome();
+    presence = 2;
+  }
+  if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
     presenceCount = presenceCount + 1;
-    //console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Motion: ' + senses.motion);
+    presence = presence + 1;
   };
+  // console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Presence Count Last: ' + presenceCountLast + ' / Motion: ' + senses.motion);
 }
 
 // DETECT IF THERE'S ANY MOTION DURING A SET INTERVAL
 var presenceDetect = function (intervalSeconds) {
   setInterval(function () {
-    if (presenceCount > 0) {
-      //console.log('I still sense a presence.');
-      presence = 1;
+    // console.log('Calling presenceDetect()');
+    if (presenceCount !== presenceCountLast) {
+      // console.log('I still sense a presence.');
+      presenceCountLast = presenceCount;
     } else {
-      //console.log('No one is here. I\'m lonely');
+      console.log('Zzzzzzzzzzzzzzzzzz...');
       presence = 0;
+      presenceCount = 0;
+      presenceCountLast = 0;
     }
-    presenceCount = 0;
   }, intervalSeconds * 1000)
 }
 presenceDetect(presenceTresh);
-
-if (presence === 1) {
-  passive.welcome();
-};
 
 var states = function () {
   setTimeout(statesInterval, 1000);
