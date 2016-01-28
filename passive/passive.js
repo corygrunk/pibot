@@ -26,8 +26,9 @@ var welcome = function () {
   }, 5500);
   setTimeout(function () {
     rec.quiet(function (file) {
-      wit.audio(file, function (data) {
-        if (data && data === 'Yes') {
+      wit.audioIntent(file, function (data) {
+        console.log(data);
+        if (data.intent && data.intent === 'Yes') {
           nyt.headlines(function (abstracts) {
             console.log(abstracts);
             var speak = 'Latest Headlines. ';
@@ -37,7 +38,7 @@ var welcome = function () {
             };
             tts.say(speak);
           });
-        } else if (data && data === 'No') {
+        } else if (data.intent && data.intent === 'No') {
           tts.say('Ok. Maybe later.');
           console.log('Ok. Maybe later.');
         } else {

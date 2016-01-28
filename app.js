@@ -9,6 +9,7 @@ var rec = require('./lib/record');
 var tts = require('./lib/tts');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
+var intents = require('./intents/intents');
 var passive = require('./passive/passive');
 var fs = require('fs');
 var ip = require('./lib/ip');
@@ -136,7 +137,9 @@ var statesInterval = function () {
     leds.on(0,1,0);
     locked = 2;
     rec.file(function (file) {
-      wit.audio(file);
+      wit.audioIntent('sample.wav', function (data) {
+        intents.query(data.intent, data.confidence, data.entities);
+      });
     });
   }
   presenceCounter();
@@ -148,7 +151,7 @@ leds.off();
 radio.repeat();
 radio.volume(90);
 radio.off();
-process.env.NODE_ENV === 'development' ? ip.print() : ip.say();
+ip.print();
 
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
 // http://stackoverflow.com/questions/12006417/nodejs-server-that-accepts-post-requests
@@ -158,14 +161,21 @@ config.server = {
   "port": 5000,
   "host": "127.0.0.1",
 }
-console.log(config.server.port);
+
+ip.get(function (ip) {
+  config.server.host = ip;
+});
+
+console.log(config.server.host);
 var server = http.createServer( function(req, res) {
+  if (req.method == 'GET') {
+    res.end('piBot: Hello world.');
+  }
   if (req.method == 'POST') {
     console.log("POST");
     var body = '';
     req.on('data', function (data) {
       body += data;
-      //console.log("Partial body: " + body);
     });
     req.on('end', function () {
       console.log("Body: " + body);

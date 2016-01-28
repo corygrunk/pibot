@@ -14,13 +14,13 @@ var sounds = [
   'sounds/custom/radio-openair.wav'
 ];
 
-var intent = function (intents, entities) {
+var intent = function (witIntents, witEntities) {
 	console.log();
   
   for (var i = intentName.length - 1; i >= 0; i--) {
-  	if (intents === intentName[i]) {
-      if (intents === 'RadioStationPrev' || intents === 'RadioStationNext') {
-        if (intents === 'RadioStationPrev') {
+  	if (witIntents === intentName[i]) {
+      if (witIntents === 'RadioStationPrev' || witIntents === 'RadioStationNext') {
+        if (witIntents === 'RadioStationPrev') {
           if (radio.state === 1) { radio.off(); }
           tts.say('Previous station');
           setTimeout(function () {

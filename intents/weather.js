@@ -5,14 +5,14 @@ var weather = require('weather-js');
 
 var intentName = "WeatherCurrent";
 
-var intent = function (intents, entities) {
-  if (intents === intentName) {
+var intent = function (witIntents, witEntities) {
+  if (witIntents === intentName) {
 
 		var location = 'Denver';
 
-	  if (entities && entities.location) {
-	    console.log('Location: ' + entities.location[0].value);
-	    location = entities.location[0].value;
+	  if (witEntities && witEntities.location) {
+	    console.log('Location: ' + witEntities.location[0].value);
+	    location = witEntities.location[0].value;
 	  }
     
     wx.current(location, function (wx) {

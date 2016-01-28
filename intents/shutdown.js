@@ -12,8 +12,8 @@ var sounds = [
 
 var randomSound = sounds[Math.floor(Math.random() * sounds.length)];
 
-var intent = function (intents) {
-  if (intents === intentName) {
+var intent = function (witIntents) {
+  if (witIntents === intentName) {
     sox.play(randomSound);
 	  leds.off();
 	  setTimeout(function () {

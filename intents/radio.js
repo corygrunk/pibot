@@ -10,9 +10,8 @@ var sounds = [
 var randomSound = sounds[Math.floor(Math.random() * sounds.length)];
 
 var intent = function (witIntents, witEntities) {
-	console.log();
 	if (witIntents === intentName) {
-		if (witEntities.on_off && witEntities.on_off > 0) {
+		if (witEntities.on_off) {
 			var entities = witEntities.on_off[0].value;
 			if (entities === 'on') {
 				radio.on();
