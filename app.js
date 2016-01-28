@@ -159,7 +159,7 @@ var statesInterval = function () {
 console.log("/////// INIT");
 leds.off();
 radio.repeat();
-radio.volume(60);
+radio.volume(85);
 radio.off();
 ip.print();
 
