@@ -13,10 +13,8 @@ var welcome = function () {
   var randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
 
   tts.say(randomMessage);
-
   var welcomeOccurrence = 0;
   if (welcomeOccurrence === 0) {
-    welcomeOccurrence = welcomeOccurrence + 1;
     setTimeout(function () {
       console.log(randomMessage);
         wx.current('Denver', function (wx) {
@@ -26,8 +24,8 @@ var welcome = function () {
     }, 1000);
   }
   if (welcomeOccurrence === 1) {
-    welcomeOccurrence = welcomeOccurrence + 1;
     setTimeout(function () {
+      console.log(randomMessage);
       nyt.headlines(3, function (abstracts) {
         var speak = 'Latest Headline. ';
         for (var i = abstracts.length - 1; i >= 0; i--) {
@@ -38,6 +36,7 @@ var welcome = function () {
         console.log(speak);
       });
     }, 1000);
+    welcomeOccurrence = welcomeOccurrence + 1;
   } 
   // YES/NO EXAMPLE TO PLAY HEADLINES - ITS KIND OF ANNOYING IN PRACTICE
   // setTimeout(function () {
