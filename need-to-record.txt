@@ -1,0 +1,21 @@
+Need to record:
+
+- Ahh...I am online
+- What can I do for you
+- Hello
+- Goodbye
+- I think I'll take a little nap
+- Shutting down
+- Monster trucks
+- Next Station
+- Previous Station
+- Radio Off
+- Radio On
+- Playing NPR
+- Playing OpenAir
+- Playing KGNU
+- Playing WWOZ
+- Playing KAOS Olympia
+- Playing KPTZ Port Townsend
+- Computer, what are the latest headlines?
+- Computer, what is the current weahter in <LOCATION>
