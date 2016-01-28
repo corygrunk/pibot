@@ -91,9 +91,8 @@ var reset = function () {
 var presenceCounter = function () {
   if (activateState === 1) {
     if (senses.motion === 1 && presence === 1) {
-      console.log('New presence detected.');
-      // passive.welcome();
-      console.log('Welcome back.');
+      // console.log('New presence detected.');
+      passive.welcome();
       presence = 2;
     }
     if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
