@@ -15,10 +15,9 @@ var sounds = [
 ];
 
 var intent = function (witIntents, witEntities) {
-	console.log();
   
   for (var i = intentName.length - 1; i >= 0; i--) {
-  	if (witIntents === intentName[i]) {
+      if (witIntents === intentName[i]) {
       if (witIntents === 'RadioStationPrev' || witIntents === 'RadioStationNext') {
         if (witIntents === 'RadioStationPrev') {
           if (radio.state === 1) { radio.off(); }
@@ -38,14 +37,13 @@ var intent = function (witIntents, witEntities) {
           }, 1000);
         }
       } else {
-    		sox.play(sounds[i]);		
-  			setTimeout(function () {
-  	  		radio.station(i + 1);
-  	  		radio.state === 1 ? radio.state = 0 : radio.state = 1; 
-  	  		console.log('Radio toggle (state: ' + radio.state + ')');
-  			}, 2000);
+    	sox.play(sounds[i]);		
+  	setTimeout(function () {
+  	  radio.station(i + 1); 
+  	  console.log('Radio toggle (state: ' + radio.state + ')');
+  	}, 2000);
       }
-  	}
+    }
   };
 }
 

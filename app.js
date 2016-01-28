@@ -46,6 +46,7 @@ var presenceCount = 0;
 var presenceCountLast = 0;
 var presenceTresh = 120; // Seconds
 
+var activateState = 0;
 var waiting = 0;
 var searching = 0;
 var locked = 0;
@@ -62,6 +63,7 @@ var checkSerial = function () {
     serialState = 1;
     setTimeout(function () {
       console.log('Activated.');
+      activateState = 1;
       leds.blink(0,1,0);
     }, 5000);
   }
@@ -72,24 +74,26 @@ var reset = function () {
   searching = 0;
   locked = 0;
   shutdown = 0;
-  console.log('Reset');
+  // console.log('Reset');
 }
 
 // RULES FOR PRESENCE:
 // MOTION DETECTED WITHIN THE PAST 60 SECONDS
 // IF NO MOTION FOR 60 SEC PRESENCE = 0;
 var presenceCounter = function () {
-  if (senses.motion === 1 && presence === 1) {
-    console.log('New presence detected.');
-    // passive.welcome();
-    console.log('Welcome back.');
-    presence = 2;
+  if (activateState === 1) {
+    if (senses.motion === 1 && presence === 1) {
+      console.log('New presence detected.');
+      // passive.welcome();
+      console.log('Welcome back.');
+      presence = 2;
+    }
+    if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
+      presenceCount = presenceCount + 1;
+      presence = presence + 1;
+    };
+    // console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Presence Count Last: ' + presenceCountLast + ' / Motion: ' + senses.motion);
   }
-  if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
-    presenceCount = presenceCount + 1;
-    presence = presence + 1;
-  };
-  // console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Presence Count Last: ' + presenceCountLast + ' / Motion: ' + senses.motion);
 }
 
 // DETECT IF THERE'S ANY MOTION DURING A SET INTERVAL
