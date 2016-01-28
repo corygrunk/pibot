@@ -16,6 +16,11 @@ var ip = require('./lib/ip');
 var http = require('http');
 var request = require('request');
 
+
+wit.textIntent('Play NPR', function (data) {
+  intents.query(data.intent, data.confidence, data.entities);
+});
+
 // DEV REQUIRE
 if (process.env.NODE_ENV === 'development') {
   var keypress = require('keypress');
