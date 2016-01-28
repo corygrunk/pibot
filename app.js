@@ -140,6 +140,9 @@ var statesInterval = function () {
         intents.query(data.intent, data.confidence, data.entities);
       });
     });
+    setTimeout(function () {
+      locked = 0;
+    }, 6000);
   }
   presenceCounter();
 }
