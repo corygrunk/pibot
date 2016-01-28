@@ -116,7 +116,7 @@ var states = function () {
 var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // console.log(logState);
-  if (senses.distance >= minLockDist && senses.distance <= maxLockDist) {
+  if (senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2) {
     searching = searching + 1;
   }
   if (searching > 0 && searching < searchDuration && locked === 0) {
@@ -134,6 +134,9 @@ var statesInterval = function () {
   if (searching === searchDuration && locked === 0) {
     locked = 1;
   }
+  if (locked === 2) { // LOCK THE SEARCHING MECHANISM UNTIL RESET
+    searching = 0;
+  }
   if (locked === 1) {
     leds.on(0,1,0);
     locked = 2;
@@ -147,7 +150,7 @@ var statesInterval = function () {
     }, 700);
     setTimeout(function () {
       reset();
-    }, 6000);
+    }, 10000);
   }
   presenceCounter();
 }
