@@ -124,7 +124,7 @@ var states = function () {
 var statesInterval = function () {
   var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // console.log(logState);
-  if (senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2) {
+  if (senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2 && wit.state === 0) {
     searching = searching + 1;
   }
   if (searching > 0 && searching < searchDuration && locked === 0) {
