@@ -12,7 +12,11 @@ var welcome = function () {
     'Good day'
   ];
   var randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
-
+  
+  if (welcomeOccurence > 1) {
+    wlecomeOccurence = 0;
+  }
+  
   if (welcomeOccurrence === 0) {
     wx.current('Denver', function (wx) {
       tts.say(randomMessage + '. ' + wx);
