@@ -3,8 +3,8 @@
 # Environment
 .env
 
-./sample.wav
-./temp.wav
+/sample.wav
+/temp.wav
 
 # Anything with a password
 autodeploy/hook.sh
