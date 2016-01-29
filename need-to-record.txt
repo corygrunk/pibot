@@ -1,12 +1,13 @@
 Need to record:
 
 - Ahh...I am online
+- Just a second
 - What can I do for you
 - Hello
 - Goodbye
 - I think I'll take a little nap
+- Welcome back
 - Shutting down
-- Monster trucks
 - Next Station
 - Previous Station
 - Radio Off
@@ -18,4 +19,5 @@ Need to record:
 - Playing KAOS Olympia
 - Playing KPTZ Port Townsend
 - Computer, what are the latest headlines?
-- Computer, what is the current weahter in <LOCATION>
+- Computer, what is the current weahter?
+- Computer, what is the thermostat stet to?
