@@ -138,7 +138,7 @@ var statesInterval = function () {
     searching = searching + 1;
   }
   if (searching > 0 && searching < searchDuration && locked === 0 && interationState === 0) {
-    console.log('Locking... ' + searching);
+    // console.log('Locking... ' + searching);
     leds.on(0,0,1);
   }
   if (searching > 0 && searching < searchDuration && senses.distance > maxLockDist) {
