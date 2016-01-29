@@ -5,6 +5,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var wit = require('./lib/wit');
+var sox = require('./lib/sox-play');
 var rec = require('./lib/record');
 var tts = require('./lib/tts');
 var leds = require('./lib/leds');
@@ -42,10 +43,11 @@ if (process.env.NODE_ENV === 'development') {
   senses = { motion: 0, distance: 141 }
 }
 
-var searchDuration = 5;
+var searchDuration = 8;
 var minLockDist = 5;
 var maxLockDist = 50;
 
+var interactionState = 0;
 var presence = 0;
 var presenceCount = 0;
 var presenceCountLast = 0;
@@ -62,6 +64,7 @@ var globalIntentSounds = {}
 globalIntentSounds.voiceCommand = [
   'sounds/custom/what-can-i-do.wav'
 ];
+
 
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
@@ -117,17 +120,24 @@ var presenceDetect = function (intervalSeconds) {
 }
 presenceDetect(presenceTresh);
 
+
 var states = function () {
   setTimeout(statesInterval, 1000);
 }
 
 var statesInterval = function () {
-  var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
+  if (tts.state === 1 || wit.state === 1 || rec.state === 1 && sox.state === 1) {
+    interationState = 1;
+  } else {
+    interationState = 0;
+  }
+  //console.log('interationState: ' + interationState + ' / tts.state: ' + tts.state + ' / wit.state: ' + wit.state + ' / rec.state: ' + rec.state + ' / sox.state: ' + sox.state);
+  // var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // console.log(logState);
-  if (senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2 && wit.state === 0) {
+  if (senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2 && interationState === 0) {
     searching = searching + 1;
   }
-  if (searching > 0 && searching < searchDuration && locked === 0) {
+  if (searching > 0 && searching < searchDuration && locked === 0 && interationState === 0) {
     console.log('Locking... ' + searching);
     leds.on(0,0,1);
   }
@@ -246,6 +256,8 @@ if (process.env.NODE_ENV !== 'development') {
 }
 // DEV MODE // listen for the "keypress" event
 if (process.env.NODE_ENV === 'development') {
+  senses.distance = 1;
+  checkSerial();
   process.stdin.on('keypress', function (ch, key) {
     if (key && key.ctrl && key.name == 'c') {
       process.exit();
