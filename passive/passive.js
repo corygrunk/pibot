@@ -13,8 +13,8 @@ var welcome = function () {
   ];
   var randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
   
-  if (welcomeOccurence > 1) {
-    wlecomeOccurence = 0;
+  if (welcomeOccurrence > 1) {
+      welcomeOccurrence = 0;
   }
   
   if (welcomeOccurrence === 0) {
