@@ -21,9 +21,6 @@ var request = require('request');
 //   intents.query(data.intent, data.confidence, data.entities);
 // });
 
-var sox = require('./lib/sox-play');
-sox.play('sounds/custom/hello.wav');
-
 // DEV REQUIRE
 if (process.env.NODE_ENV === 'development') {
   var keypress = require('keypress');
