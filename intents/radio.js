@@ -24,7 +24,6 @@ var intent = function (witIntents, witEntities) {
 	  	}
 		} else {
   		radio.toggle();
-  		radio.state === 1 ? radio.state = 0 : radio.state = 1; 
   		console.log('Radio Toggle (state: ' + radio.state + ')');
   	}
   }
