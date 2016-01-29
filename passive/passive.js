@@ -3,6 +3,7 @@ var wx = require('../lib/weather');
 var rec = require('../lib/record');
 var wit = require('../lib/wit');
 var nyt = require('../lib/nytimes');
+var welcomeOccurrence = 0;
 
 var welcome = function () {
   var welcomeMessages = [
@@ -12,30 +13,22 @@ var welcome = function () {
   ];
   var randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
 
-  tts.say(randomMessage);
-  var welcomeOccurrence = 0;
   if (welcomeOccurrence === 0) {
-    setTimeout(function () {
-      console.log(randomMessage);
-        wx.current('Denver', function (wx) {
-          console.log(wx);
-          tts.say(wx);
-        });
-    }, 1000);
+    wx.current('Denver', function (wx) {
+      tts.say(randomMessage + '. ' + wx);
+      console.log(randomMessage + '. ' + wx);
+    });
   }
   if (welcomeOccurrence === 1) {
-    setTimeout(function () {
-      console.log(randomMessage);
-      nyt.headlines(3, function (abstracts) {
-        var speak = 'Latest Headline. ';
-        for (var i = abstracts.length - 1; i >= 0; i--) {
-          abstracts[i];
-          i > 0 ? speak = speak + abstracts[i] + ' Next story. ' : speak = speak + abstracts[i];
-        };
-        tts.say(speak);
-        console.log(speak);
-      });
-    }, 1000);
+    nyt.headlines(3, function (abstracts) {
+      var speak = 'Latest Headline. ';
+      for (var i = abstracts.length - 1; i >= 0; i--) {
+        abstracts[i];
+        i > 0 ? speak = speak + abstracts[i] + ' Next story. ' : speak = speak + abstracts[i];
+      };
+      tts.say(randomMessage + '. ' + speak);
+      console.log(randomMessage + '. ' + speak);
+    });
     welcomeOccurrence = welcomeOccurrence + 1;
   } 
   // YES/NO EXAMPLE TO PLAY HEADLINES - ITS KIND OF ANNOYING IN PRACTICE
