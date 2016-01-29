@@ -1,5 +1,6 @@
 var fs = require('fs');
 var hello = require('./hello');
+var nest = require('./nest');
 var radio = require('./radio');
 var radioStations = require('./radioStations');
 var radioVolumeDown = require('./radioVolumeDown');
@@ -19,6 +20,7 @@ var radioState = radio.state; // from intents/radio.js
 var query = function (witIntent, witConfidence, witEntities) {
   if (witConfidence > confidenceThresh) {
     hello.intent(witIntent,witEntities);
+    nest.intent(witIntent,witEntities);
     radio.intent(witIntent,witEntities);
     radioStations.intent(witIntent,witEntities);
     radioVolumeDown.intent(witIntent,witEntities);

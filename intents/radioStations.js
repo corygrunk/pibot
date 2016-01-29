@@ -38,12 +38,11 @@ var intent = function (witIntents) {
           }
       } else {
         if (radio.state === 1) { radio.off(); };
-        sox.play(sounds[i]); 
-        stationNum = i + 1;
-        setTimeout(function () {
+        sox.play(sounds[i], function () {
+          stationNum = i + 1;
           radio.station(stationNum);
           radio.state = 1;
-        }, 2000);
+        }); 
       }
     }
   }
