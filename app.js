@@ -17,8 +17,8 @@ var http = require('http');
 var request = require('request');
 
 // FOR TESTING INTENTS
-// wit.textIntent('Play NPR', function (data) {
-//   intents.query(data.intent, data.confidence, data.entities);
+// wit.textIntent('Play OpenAir', function (data) {
+//  intents.query(data.intent, data.confidence, data.entities);
 // });
 
 // DEV REQUIRE

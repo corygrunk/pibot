@@ -15,9 +15,10 @@ var sounds = [
 ];
 
 var intent = function (witIntents) {
-
+  var stationNum;
   for (var i = intentName.length - 1; i >= 0; i--) {
       if (witIntents === intentName[i]) {
+        stationNum = i + 1;
         if (witIntents === 'RadioStationPrev' || witIntents === 'RadioStationNext') {
           if (witIntents === 'RadioStationPrev') {
             if (radio.state === 1) { radio.off(); }
@@ -39,7 +40,8 @@ var intent = function (witIntents) {
       } else {
         if (radio.state === 1) { radio.off(); };
         sox.play(sounds[i], function () {
-          stationNum = i + 1;
+          //stationNum = i + 1;
+          console.log(stationNum);
           radio.station(stationNum);
           radio.state = 1;
         }); 
