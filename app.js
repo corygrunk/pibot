@@ -207,7 +207,7 @@ var server = http.createServer( function(req, res) {
     });
     req.on('end', function () {
       console.log("Body: " + body);
-      tts.say('I have recieved a notification. ' + body);
+      tts.say('Excuse me, you have a new notification. ' + body);
     });
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end('POST received.');
