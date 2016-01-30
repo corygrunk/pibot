@@ -200,14 +200,20 @@ var server = http.createServer( function(req, res) {
     res.end('piBot: Hello world.');
   }
   if (req.method == 'POST') {
-    console.log("POST");
     var body = '';
     req.on('data', function (data) {
       body += data;
     });
     req.on('end', function () {
-      console.log("Body: " + body);
-      tts.say('Excuse me, you have a new notification. ' + body);
+      if (req.headers.notifytype == 'Command') {
+        console.log('Command: ' + body);
+        wit.textIntent(body, function (data) {
+         intents.query(data.intent, data.confidence, data.entities);
+        });
+      } else {
+        console.log('Body: ' + body);
+        tts.say('Excuse me, you have a new notification. ' + body);
+      }
     });
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end('POST received.');
@@ -220,20 +226,19 @@ console.log('Listening at http://' + host + ':' + port);
 
 
 // TEST NOTIFICATION 
-var testNotify = function (notifyBody) {
+var testNotify = function (notifyHeader, notifyBody) {
   request({
       url: 'http://' + host + ':' + port,
       method: 'POST',
       headers: {
-          'Content-Type': 'MyContentType',
-          'Custom-Header': 'Custom Value'
+          'notifyType': notifyHeader
       },
       body: notifyBody
   }, function(error, response, body){
       if(error) {
-          console.log(error);
+          //console.log(error);
       } else {
-          console.log(response.statusCode, body);
+          //console.log(response.statusCode, body);
       }
   });
   }
@@ -270,8 +275,12 @@ if (process.env.NODE_ENV === 'development') {
       senses.motion === 1 ? senses.motion = 0 : senses.motion = 1;
       console.log('Keypress');
     }
+    if (key && key.name === 'o') {
+      testNotify('', 'Turn the radio off.');
+      console.log('Keypress');
+    }
     if (key && key.name === 'p') {
-      testNotify('This is a test notification');
+      testNotify('Command', 'Turn the radio off.');
       console.log('Keypress');
     }
   });
