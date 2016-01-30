@@ -276,11 +276,11 @@ if (process.env.NODE_ENV === 'development') {
       console.log('Keypress');
     }
     if (key && key.name === 'o') {
-      testNotify('', 'Turn the radio off.');
+      testNotify('', 'Test notification.');
       console.log('Keypress');
     }
     if (key && key.name === 'p') {
-      testNotify('Command', 'Turn the radio off.');
+      testNotify('Command', 'What\'s the weather.');
       console.log('Keypress');
     }
   });
