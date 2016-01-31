@@ -92,7 +92,7 @@ var presenceCounter = function () {
   if (activateState === 1) {
     if (senses.motion === 1 && presence === 1) {
       // console.log('New presence detected.');
-      passive.welcome();
+      // passive.welcome();
       presence = 2;
     }
     if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
