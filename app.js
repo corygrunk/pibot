@@ -16,9 +16,10 @@ var fs = require('fs');
 var ip = require('./lib/ip');
 var http = require('http');
 var request = require('request');
+var log = require('./lib/logger');
 
 // FOR TESTING INTENTS
-// wit.textIntent('Play OpenAir', function (data) {
+// wit.textIntent('Weather in Denver.', function (data) {
 //  intents.query(data.intent, data.confidence, data.entities);
 // });
 
@@ -212,6 +213,7 @@ var server = http.createServer( function(req, res) {
         });
       } else {
         console.log('Body: ' + body);
+        log.notify(body);
         tts.say('Excuse me, you have a new notification. ' + body);
       }
     });
@@ -241,7 +243,7 @@ var testNotify = function (notifyHeader, notifyBody) {
           //console.log(response.statusCode, body);
       }
   });
-  }
+}
 
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
