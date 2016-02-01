@@ -3,6 +3,7 @@ var exec = require('child_process').exec;
 var child;
 var leds = require('../lib/leds');
 var sox = require('../lib/sox-play');
+var log = require('../lib/logger');
 
 var intentName = "Shutdown";
 
@@ -14,19 +15,20 @@ var randomSound = sounds[Math.floor(Math.random() * sounds.length)];
 
 var intent = function (witIntents) {
   if (witIntents === intentName) {
+    log.system('Shutting down.');
     sox.play(randomSound);
-	  leds.off();
-	  setTimeout(function () {
-	  	if (process.env.NODE_ENV === 'development') {
-	  		console.log('Shutting down...');
-	  	} else {
-		    exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
-		      if (error !== null) {
-		        console.log('exec error: ' + error);
-		      }
-		    });
-		  }
-	  }, 3000);
+    leds.off();
+    setTimeout(function () {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Shutting down...');
+      } else {
+        exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
+          if (error !== null) {
+            console.log('exec error: ' + error);
+          }
+        });
+      }
+    }, 3000);
 
   }
 }

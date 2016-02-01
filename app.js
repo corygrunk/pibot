@@ -176,6 +176,7 @@ var statesInterval = function () {
 
 // INIT
 console.log("/////// INIT");
+log.system('Starting up.');
 leds.off();
 radio.repeat();
 radio.volume(85);
