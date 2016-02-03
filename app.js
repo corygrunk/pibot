@@ -1,7 +1,6 @@
 var dotenv = require('dotenv');
   dotenv.config({silent: true});
   dotenv.load();
-var sys = require('sys');
 var exec = require('child_process').exec;
 var child;
 var wit = require('./lib/wit');
