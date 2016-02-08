@@ -1,4 +1,3 @@
-var sox = require('../lib/sox-play');
 var tts = require('../lib/tts');
 var radio = require('../lib/radio');
 
@@ -10,8 +9,8 @@ var intentName = [ // ORDER SHOULD MATCH MPC PLAYLIST
 ]
 
 var sounds = [
-  'sounds/custom/radio-npr.wav',
-  'sounds/custom/radio-openair.wav'
+  'Playing N P R',
+  'Playing Open Air'
 ];
 
 var intent = function (witIntents) {
@@ -22,24 +21,22 @@ var intent = function (witIntents) {
         if (witIntents === 'RadioStationPrev' || witIntents === 'RadioStationNext') {
           if (witIntents === 'RadioStationPrev') {
             if (radio.state === 1) { radio.off(); }
-            tts.say('Previous station');
-            setTimeout(function () {
+            tts.say('Previous station', function () {
               radio.prev();
               radio.state = 1
               console.log('Radio previous station.');
-            }, 1000);
+            });
           } else {
             if (radio.state === 1) { radio.off(); }
-            tts.say('Next station');
-            setTimeout(function () {
+            tts.say('Next station', function () {
               radio.next();
               radio.state = 1
-              console.log('Radio next station.');
-            }, 1000);
+              console.log('Radio next station.');              
+            });
           }
       } else {
         if (radio.state === 1) { radio.off(); };
-        sox.play(sounds[i], function () {
+        tts.say(sounds[i], function () {
           //stationNum = i + 1;
           console.log(stationNum);
           radio.station(stationNum);
