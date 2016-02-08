@@ -65,7 +65,7 @@ var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
     setTimeout(function () {
-      tts.say('I am onlline.');
+      tts.say('I am on line.');
       console.log('Activated.');
       activateState = 1;
       leds.blink(0,1,0);
