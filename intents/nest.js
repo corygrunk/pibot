@@ -1,4 +1,3 @@
-var sox = require('../lib/sox-play');
 var tts = require('../lib/tts');
 var wx = require('../lib/weather');
 var nest = require('nest-thermostat').init(process.env.NEST_USERNAME, process.env.NEST_PASSWORD);

@@ -5,6 +5,7 @@
 
 /sample.wav
 /temp.wav
+/temp.aiff
 
 # Anything with a password
 autodeploy/hook.sh

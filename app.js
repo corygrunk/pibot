@@ -60,16 +60,12 @@ var locked = 0;
 var recording = 0;
 var serialState = 0;
 
-var globalIntentSounds = {}
-globalIntentSounds.voiceCommand = [
-  'sounds/custom/what-can-i-do.wav'
-];
-
 
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
     setTimeout(function () {
+      tts.say('I am onlline.');
       console.log('Activated.');
       activateState = 1;
       leds.blink(0,1,0);
@@ -175,12 +171,12 @@ var statesInterval = function () {
 
 // INIT
 console.log("/////// INIT");
+tts.say('Pie Bot initializing');
 log.system('Starting up.');
 leds.off();
 radio.repeat();
-radio.volume(85);
+radio.volume(90);
 radio.off();
-ip.print();
 
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
 // http://stackoverflow.com/questions/12006417/nodejs-server-that-accepts-post-requests

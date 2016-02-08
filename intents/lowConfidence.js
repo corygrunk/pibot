@@ -1,14 +1,14 @@
-var sox = require('../lib/sox-play');
+var tts = require('../lib/tts');
 
-var sounds = [
-  'sounds/custom/i-dont-understand.wav'
+var responses = [
+  'I dont understand.'
 ];
 
-var randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+var randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
 var intent = function () {
-	sox.play(randomSound, function () {
-		console.log(randomSound);
+	tts.say(randomResponse, function () {
+		console.log(randomResponse);
 	});
 }
 
