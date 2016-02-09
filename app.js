@@ -158,7 +158,7 @@ var statesInterval = function () {
     locked = 2;
     setTimeout(function () {
       leds.off();
-      rec.file(4, function (file) {
+      rec.file(5, function (file) {
         wit.audioIntent('sample.wav', function (data) {
           intents.query(data.intent, data.confidence, data.entities);
         });
