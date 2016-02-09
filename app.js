@@ -9,6 +9,7 @@ var rec = require('./lib/record');
 var tts = require('./lib/tts');
 var leds = require('./lib/leds');
 var radio = require('./lib/radio');
+var pushover = require('./lib/pushover');
 var intents = require('./intents/intents');
 var passive = require('./passive/passive');
 var fs = require('fs');
@@ -33,6 +34,8 @@ var searching = 0;
 var locked = 0;
 var recording = 0;
 var serialState = 0;
+
+pushover.client();
 
 // FOR TESTING INTENTS
 // wit.textIntent('Weather in Denver.', function (data) {
@@ -192,7 +195,7 @@ ip.get(function (ip) {
 
 var server = http.createServer( function(req, res) {
   if (req.method == 'GET') {
-    res.end('piBot: Hello world.');
+    res.end('Hello world.');
   }
   if (req.method == 'POST') {
     var body = '';
@@ -200,8 +203,8 @@ var server = http.createServer( function(req, res) {
       body += data;
     });
     req.on('end', function () {
-      if (req.headers.notifytype == 'Command') {
-        console.log('Command: ' + body);
+      if (req.headers.notify == 'command') {
+        console.log('command: ' + body);
         wit.textIntent(body, function (data) {
          intents.query(data.intent, data.confidence, data.entities);
         });
@@ -227,7 +230,7 @@ var testNotify = function (notifyHeader, notifyBody) {
       url: 'http://' + host + ':' + port,
       method: 'POST',
       headers: {
-          'notifyType': notifyHeader
+          'notifyType': notify
       },
       body: notifyBody
   }, function(error, response, body){
