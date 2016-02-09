@@ -17,6 +17,23 @@ var http = require('http');
 var request = require('request');
 var log = require('./lib/logger');
 
+var searchDuration = 8;
+var minLockDist = 5;
+var maxLockDist = 50;
+
+var interactionState = 0;
+var presence = 0;
+var presenceCount = 0;
+var presenceCountLast = 0;
+var presenceTresh = 240; // Seconds
+
+var activateState = 0;
+var waiting = 0;
+var searching = 0;
+var locked = 0;
+var recording = 0;
+var serialState = 0;
+
 // FOR TESTING INTENTS
 // wit.textIntent('Weather in Denver.', function (data) {
 //  intents.query(data.intent, data.confidence, data.entities);
@@ -43,30 +60,12 @@ if (process.env.NODE_ENV === 'development') {
   senses = { motion: 0, distance: 141 }
 }
 
-var searchDuration = 8;
-var minLockDist = 5;
-var maxLockDist = 50;
-
-var interactionState = 0;
-var presence = 0;
-var presenceCount = 0;
-var presenceCountLast = 0;
-var presenceTresh = 120; // Seconds
-
-var activateState = 0;
-var waiting = 0;
-var searching = 0;
-var locked = 0;
-var recording = 0;
-var serialState = 0;
-
-
 var checkSerial = function () {
   if (senses.distance && serialState === 0) {
     serialState = 1;
     setTimeout(function () {
-      tts.say('I am on line.');
-      console.log('Activated.');
+      tts.say('I am now online.');
+      console.log('I am now online.');
       activateState = 1;
       leds.blink(0,1,0);
     }, 5000);
@@ -83,12 +82,12 @@ var reset = function () {
 
 // RULES FOR PRESENCE:
 // MOTION DETECTED WITHIN THE PAST 60 SECONDS
-// IF NO MOTION FOR 60 SEC PRESENCE = 0;
+// IF NO MOTION FOR 240 SEC PRESENCE = 0;
 var presenceCounter = function () {
   if (activateState === 1) {
     if (senses.motion === 1 && presence === 1) {
       // console.log('New presence detected.');
-      // passive.welcome();
+      passive.welcome();
       presence = 2;
     }
     if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
@@ -123,17 +122,17 @@ var states = function () {
 
 var statesInterval = function () {
   if (tts.state === 1 || wit.state === 1 || rec.state === 1 && sox.state === 1) {
-    interationState = 1;
+    interactionState = 1;
   } else {
-    interationState = 0;
+    interactionState = 0;
   }
-  //console.log('interationState: ' + interationState + ' / tts.state: ' + tts.state + ' / wit.state: ' + wit.state + ' / rec.state: ' + rec.state + ' / sox.state: ' + sox.state);
+  //console.log('interactionState: ' + interactionState + ' / tts.state: ' + tts.state + ' / wit.state: ' + wit.state + ' / rec.state: ' + rec.state + ' / sox.state: ' + sox.state);
   // var logState = 'waiting: ' + waiting + ' / searching: ' + searching + ' / locked: ' + locked + ' / recording: ' + recording + ' / motion: ' + senses.motion + ' / distance: ' + senses.distance;
   // console.log(logState);
-  if (senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2 && interationState === 0) {
+  if (activateState === 1 && senses.distance >= minLockDist && senses.distance <= maxLockDist && locked !== 2 && interactionState === 0) {
     searching = searching + 1;
   }
-  if (searching > 0 && searching < searchDuration && locked === 0 && interationState === 0) {
+  if (searching > 0 && searching < searchDuration && locked === 0 && interactionState === 0) {
     // console.log('Locking... ' + searching);
     leds.on(0,0,1);
   }
@@ -171,7 +170,7 @@ var statesInterval = function () {
 
 // INIT
 console.log("/////// INIT");
-tts.say('Pie Bot initializing');
+tts.say('Running startup routine.');
 log.system('Starting up.');
 leds.off();
 radio.repeat();
@@ -191,7 +190,6 @@ ip.get(function (ip) {
   config.server.host = ip;
 });
 
-console.log(config.server.host);
 var server = http.createServer( function(req, res) {
   if (req.method == 'GET') {
     res.end('piBot: Hello world.');
@@ -220,10 +218,10 @@ var server = http.createServer( function(req, res) {
 port = config.server.port;
 host = config.server.host;
 server.listen(port, host);
-console.log('Listening at http://' + host + ':' + port);
+console.log('Notifications server: http://' + host + ':' + port);
 
 
-// TEST NOTIFICATION 
+// TEST NOTIFICATION
 var testNotify = function (notifyHeader, notifyBody) {
   request({
       url: 'http://' + host + ':' + port,
@@ -241,7 +239,6 @@ var testNotify = function (notifyHeader, notifyBody) {
   });
 }
 
-
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 if (process.env.NODE_ENV !== 'development') {
   sp.on('open', function () {
@@ -257,6 +254,7 @@ if (process.env.NODE_ENV !== 'development') {
 } else {
   setInterval(states, 300);
 }
+
 // DEV MODE // listen for the "keypress" event
 if (process.env.NODE_ENV === 'development') {
   senses.distance = 1;
@@ -266,26 +264,25 @@ if (process.env.NODE_ENV === 'development') {
       process.exit();
     }
     if (key && key.name === 'd') {
-      locked = 1;
-      console.log('Keypress');
+      senses.distance >= minLockDist && senses.distance <= maxLockDist ? senses.distance = maxLockDist + 1 : senses.distance = maxLockDist - 1;
+      console.log('Keypress (distance: ' + senses.distance + ')');
     }
     if (key && key.name === 'm') {
       senses.motion === 1 ? senses.motion = 0 : senses.motion = 1;
-      console.log('Keypress');
+      console.log('Keypress (motion: ' + senses.motion + ')');
     }
     if (key && key.name === 'o') {
       testNotify('', 'Test notification.');
-      console.log('Keypress');
+      console.log('Keypress Post Notification');
     }
     if (key && key.name === 'p') {
       testNotify('Command', 'What\'s the weather.');
-      console.log('Keypress');
+      console.log('Keypress Post Command');
     }
   });
   process.stdin.setRawMode(true);
   process.stdin.resume();
 }
-
 
 // EXIT
 var exit = function () {

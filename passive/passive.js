@@ -12,29 +12,34 @@ var welcome = function () {
     'Good day'
   ];
   var randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
-  
-  if (welcomeOccurrence > 1) {
+
+  if (welcomeOccurrence > 5) {
       welcomeOccurrence = 0;
   }
-  
+
   if (welcomeOccurrence === 0) {
     wx.current('Denver', function (wx) {
       tts.say(randomMessage + '. ' + wx);
       console.log(randomMessage + '. ' + wx);
     });
+  } else {
+    tts.say(randomMessage);
+    console.log(randomMessage);
   }
-  if (welcomeOccurrence === 1) {
-    nyt.headlines(3, function (abstracts) {
-      var speak = 'Latest Headline. ';
-      for (var i = abstracts.length - 1; i >= 0; i--) {
-        abstracts[i];
-        i > 0 ? speak = speak + abstracts[i] + ' Next story. ' : speak = speak + abstracts[i];
-      };
-      tts.say(randomMessage + '. ' + speak);
-      console.log(randomMessage + '. ' + speak);
-    });
-    welcomeOccurrence = welcomeOccurrence + 1;
-  } 
+  
+  welcomeOccurrence = welcomeOccurrence + 1;
+  // if (welcomeOccurrence === 1) {
+  //   nyt.headlines(3, function (abstracts) {
+  //     var speak = 'Latest Headline. ';
+  //     for (var i = abstracts.length - 1; i >= 0; i--) {
+  //       abstracts[i];
+  //       i > 0 ? speak = speak + abstracts[i] + ' Next story. ' : speak = speak + abstracts[i];
+  //     };
+  //     tts.say(randomMessage + '. ' + speak);
+  //     console.log(randomMessage + '. ' + speak);
+  //   });
+  //   welcomeOccurrence = welcomeOccurrence + 1;
+  // }
   // YES/NO EXAMPLE TO PLAY HEADLINES - ITS KIND OF ANNOYING IN PRACTICE
   // setTimeout(function () {
   //   tts.say('Would you like to hear todays headlines');
