@@ -1,19 +1,19 @@
-var sox = require('../lib/sox-play');
+var tts = require('../lib/tts');
 
 var intentName = "Hello";
 
 var sounds = [
-  'sounds/mac-say/hi-01.wav',
-  'sounds/mac-say/hi-02.wav',
-  'sounds/mac-say/hi-03.wav',
-  'sounds/mac-say/hi-04.wav'
+  'Hi. how are you.',
+  'Hello to you.',
+  'Nice to talk to you again.',
+  'Hello. I hope youve been well.'
 ];
 
-var randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+var randomPhrase = sounds[Math.floor(Math.random() * sounds.length)];
 
 var intent = function (witIntents) {
   if (witIntents === intentName) {
-    sox.play(randomSound);
+    tts.say(randomPhrase);
   }
 }
 
