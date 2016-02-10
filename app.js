@@ -60,7 +60,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 var senses = {}; // SENSOR OBJECT - senses.distance & senses.motion
 if (process.env.NODE_ENV === 'development') {
-  senses = { motion: 0, distance: 141 }
+  senses = { motion: 0, distance: 141 };
 }
 
 var checkSerial = function () {
@@ -73,7 +73,7 @@ var checkSerial = function () {
       leds.blink(0,1,0);
     }, 5000);
   }
-}
+};
 
 var reset = function () {
   waiting = 0;
@@ -81,7 +81,7 @@ var reset = function () {
   locked = 0;
   shutdown = 0;
   // console.log('Reset');
-}
+};
 
 // RULES FOR PRESENCE:
 // MOTION DETECTED WITHIN THE PAST 60 SECONDS
@@ -96,10 +96,10 @@ var presenceCounter = function () {
     if (senses.motion === 1 && presence < 1 || senses.motion === 1 && presence > 1) {
       presenceCount = presenceCount + 1;
       presence = presence + 1;
-    };
+    }
     // console.log('Presence: ' + presence + ' / Presence Count: ' + presenceCount + ' / Presence Count Last: ' + presenceCountLast + ' / Motion: ' + senses.motion);
   }
-}
+};
 
 // DETECT IF THERE'S ANY MOTION DURING A SET INTERVAL
 var presenceDetect = function (intervalSeconds) {
@@ -114,14 +114,14 @@ var presenceDetect = function (intervalSeconds) {
       presenceCount = 0;
       presenceCountLast = 0;
     }
-  }, intervalSeconds * 1000)
-}
+  }, intervalSeconds * 1000);
+};
 presenceDetect(presenceTresh);
 
 
 var states = function () {
   setTimeout(statesInterval, 1000);
-}
+};
 
 var statesInterval = function () {
   if (tts.state === 1 || wit.state === 1 || rec.state === 1 && sox.state === 1) {
@@ -169,7 +169,7 @@ var statesInterval = function () {
     }, 10000);
   }
   presenceCounter();
-}
+};
 
 // INIT
 console.log("/////// INIT");
@@ -183,11 +183,11 @@ radio.off();
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
 // http://stackoverflow.com/questions/12006417/nodejs-server-that-accepts-post-requests
 //
-var config = {}
+var config = {};
 config.server = {
   "port": 5000,
   "host": "127.0.0.1",
-}
+};
 
 ip.get(function (ip) {
   config.server.host = ip;
@@ -240,7 +240,7 @@ var testNotify = function (notifyHeader, notifyBody) {
           //console.log(response.statusCode, body);
       }
   });
-}
+};
 
 // TURN ON ARDUINO SERIAL COMMUNITCATION
 if (process.env.NODE_ENV !== 'development') {
@@ -249,7 +249,7 @@ if (process.env.NODE_ENV !== 'development') {
     sp.on('data', function(data) {
       if (data.charAt(0) === "{" && data.charAt(data.length - 1) === "}") {
         senses = JSON.parse(data);
-      };
+      }
       checkSerial();
       states();
     });
@@ -291,5 +291,5 @@ if (process.env.NODE_ENV === 'development') {
 var exit = function () {
   leds.off();
   process.exit();
-}
+};
 process.on('SIGINT', exit);
