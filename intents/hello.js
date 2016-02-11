@@ -15,6 +15,6 @@ var intent = function (witIntents) {
   if (witIntents === intentName) {
     tts.say(randomPhrase);
   }
-}
+};
 
 module.exports.intent = intent;

@@ -21,7 +21,7 @@ var intent = function (witIntents) {
       if (process.env.NODE_ENV === 'development') {
         console.log('Shutting down...');
       } else {
-        exec('mpc stop && shutdown -h now', function(error, stdout, stderr) {
+        exec('./home/pi/shutdown.sh', function(error, stdout, stderr) {
           if (error !== null) {
             console.log('exec error: ' + error);
           }
@@ -30,6 +30,6 @@ var intent = function (witIntents) {
     }, 3000);
 
   }
-}
+};
 
 module.exports.intent = intent;
