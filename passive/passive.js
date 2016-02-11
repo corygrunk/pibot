@@ -5,6 +5,8 @@ var wit = require('../lib/wit');
 var nyt = require('../lib/nytimes');
 var welcomeOccurrence = 0;
 
+module.exports.state = 0;
+
 var welcome = function () {
   var welcomeMessages = [
     'Welcome back',
@@ -19,14 +21,20 @@ var welcome = function () {
 
   if (welcomeOccurrence === 0) {
     wx.current('Denver', function (wx) {
-      tts.say(randomMessage + '. ' + wx);
+      module.exports.state = 1;
+      tts.say(randomMessage + '. ' + wx, function () {
+        module.exports.state = 0;
+      });
       console.log(randomMessage + '. ' + wx);
     });
   } else {
-    tts.say(randomMessage);
+    module.exports.state = 1;
+    tts.say(randomMessage, function () {
+      module.exports.state = 0;
+    });
     console.log(randomMessage);
   }
-  
+
   welcomeOccurrence = welcomeOccurrence + 1;
   // if (welcomeOccurrence === 1) {
   //   nyt.headlines(3, function (abstracts) {

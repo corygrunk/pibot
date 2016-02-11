@@ -18,7 +18,7 @@ var http = require('http');
 var request = require('request');
 var log = require('./lib/logger');
 
-var searchDuration = 8;
+var searchDuration = 6;
 var minLockDist = 5;
 var maxLockDist = 50;
 
@@ -124,7 +124,7 @@ var states = function () {
 };
 
 var statesInterval = function () {
-  if (tts.state === 1 || wit.state === 1 || rec.state === 1 && sox.state === 1) {
+  if (tts.state === 1 || wit.state === 1 || rec.state === 1 && sox.state === 1 && passive.state === 1) {
     interactionState = 1;
   } else {
     interactionState = 0;

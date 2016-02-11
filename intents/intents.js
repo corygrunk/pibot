@@ -8,7 +8,7 @@ var radioVolumeDown = require('./radioVolumeDown');
 var radioVolumeUp = require('./radioVolumeUp');
 var shutdown = require('./shutdown');
 var weather = require('./weather');
-var weather = require('./who');
+var who = require('./who');
 var lowConfidence = require('./lowConfidence');
 
 var witIntent;
