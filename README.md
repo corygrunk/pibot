@@ -1,3 +1,3 @@
 # Pibot
 
-An oberservational, companion robot, built on a Raspberry Pi/Arduino with Node.
+An oberservational, companion robot.
