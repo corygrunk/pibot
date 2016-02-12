@@ -6,6 +6,7 @@ var radio = require('./radio');
 var radioStations = require('./radioStations');
 var radioVolumeDown = require('./radioVolumeDown');
 var radioVolumeUp = require('./radioVolumeUp');
+var reboot = require('./reboot');
 var shutdown = require('./shutdown');
 var weather = require('./weather');
 var who = require('./who');
@@ -27,6 +28,7 @@ var query = function (witIntent, witConfidence, witEntities) {
     radioStations.intent(witIntent,witEntities);
     radioVolumeDown.intent(witIntent,witEntities);
     radioVolumeUp.intent(witIntent,witEntities);
+    reboot.intent(witIntent,witEntities);
     shutdown.intent(witIntent,witEntities);
     weather.intent(witIntent,witEntities);
     who.intent(witIntent,witEntities);
