@@ -38,7 +38,7 @@ var serialState = 0;
 pushover.client();
 
 // FOR TESTING INTENTS
-// wit.textIntent('Say Somthing cool.', function (data) {
+// wit.textIntent('Say something really really interesting.', function (data) {
 //   console.log(data);
 //  intents.query(data.intent, data.confidence, data.entities, data.text);
 // });
@@ -184,45 +184,45 @@ radio.off();
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
 // http://stackoverflow.com/questions/12006417/nodejs-server-that-accepts-post-requests
 //
-var config = {};
-config.server = {
-  "port": 5000,
-  "host": "127.0.0.1",
-};
+// var config = {};
+// config.server = {
+//   "port": 5000,
+//   "host": "127.0.0.1",
+// };
+//
+// ip.get(function (ip) {
+//   config.server.host = ip;
+// });
 
-ip.get(function (ip) {
-  config.server.host = ip;
-});
-
-var server = http.createServer( function(req, res) {
-  if (req.method == 'GET') {
-    res.end('Hello world.');
-  }
-  if (req.method == 'POST') {
-    var body = '';
-    req.on('data', function (data) {
-      body += data;
-    });
-    req.on('end', function () {
-      if (req.headers.notify == 'command') {
-        console.log('command: ' + body);
-        wit.textIntent(body, function (data) {
-         intents.query(data.intent, data.confidence, data.entities);
-        });
-      } else {
-        console.log('Body: ' + body);
-        log.notify(body);
-        tts.say('Excuse me, you have a new notification. ' + body);
-      }
-    });
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end('POST received.');
-  }
-});
-port = config.server.port;
-host = config.server.host;
-server.listen(port, host);
-console.log('Notifications server: http://' + host + ':' + port);
+// var server = http.createServer( function(req, res) {
+//   if (req.method == 'GET') {
+//     res.end('Hello world.');
+//   }
+//   if (req.method == 'POST') {
+//     var body = '';
+//     req.on('data', function (data) {
+//       body += data;
+//     });
+//     req.on('end', function () {
+//       if (req.headers.notify == 'command') {
+//         console.log('command: ' + body);
+//         wit.textIntent(body, function (data) {
+//          intents.query(data.intent, data.confidence, data.entities);
+//         });
+//       } else {
+//         console.log('Body: ' + body);
+//         log.notify(body);
+//         tts.say('Excuse me, you have a new notification. ' + body);
+//       }
+//     });
+//     res.writeHead(200, {'Content-Type': 'text/html'});
+//     res.end('POST received.');
+//   }
+// });
+// port = config.server.port;
+// host = config.server.host;
+// server.listen(port, host);
+// console.log('Notifications server: http://' + host + ':' + port);
 
 
 // TEST NOTIFICATION
@@ -282,6 +282,11 @@ if (process.env.NODE_ENV === 'development') {
     if (key && key.name === 'p') {
       testNotify('Command', 'What\'s the weather.');
       console.log('Keypress Post Command');
+    }
+    if (key && key.name === 'y') {
+      wit.textIntent('say something funny.', function (data) {
+       intents.query(data.intent, data.confidence, data.entities, data.text);
+      });
     }
   });
   process.stdin.setRawMode(true);
