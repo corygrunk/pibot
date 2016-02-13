@@ -38,8 +38,9 @@ var serialState = 0;
 pushover.client();
 
 // FOR TESTING INTENTS
-// wit.textIntent('Weather in Denver.', function (data) {
-//  intents.query(data.intent, data.confidence, data.entities);
+// wit.textIntent('Say Somthing cool.', function (data) {
+//   console.log(data);
+//  intents.query(data.intent, data.confidence, data.entities, data.text);
 // });
 
 // DEV REQUIRE
@@ -160,7 +161,7 @@ var statesInterval = function () {
       leds.off();
       rec.file(4, function (file) {
         wit.audioIntent('sample.wav', function (data) {
-          intents.query(data.intent, data.confidence, data.entities);
+          intents.query(data.intent, data.confidence, data.entities, data.text);
         });
       });
     }, 700);
