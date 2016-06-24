@@ -178,7 +178,7 @@ tts.say('Running startup routine.');
 log.system('Starting up.');
 leds.off();
 radio.repeat();
-radio.volume(90);
+radio.volume(100);
 radio.off();
 
 // WEB SERVER TO RECEIVE NOTIFICATIONS - TO DO
