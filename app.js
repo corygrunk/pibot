@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === 'development') {
 if (process.env.NODE_ENV !== 'development') {
   var serialport = require("serialport");
   var SerialPort = serialport.SerialPort; // localize object constructor
-  var sp = new SerialPort("/dev/ttyUSB0", {
+  var sp = new SerialPort("/dev/ttyACM0", {
     baudrate: 19200,
     parser: serialport.parsers.readline("\n")
   });
